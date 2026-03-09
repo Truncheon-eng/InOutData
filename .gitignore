@@ -1,6 +1,7 @@
 # Сборка
 build/
 bin/
+obj/
 *.o
 *.d
 *.exe
