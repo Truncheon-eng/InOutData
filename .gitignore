@@ -1,0 +1,13 @@
+# Сборка
+build/
+bin/
+*.o
+*.d
+*.exe
+*.out
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*~
