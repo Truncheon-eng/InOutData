@@ -8,17 +8,40 @@ void gen_random_vectors(std::vector<uint32_t>& test) {
 }
 
 int main(int argc, char * argv[]) {
-    std::vector<uint32_t> test(InOutData320::NUM_WORDS, 0);
+    // std::vector<uint32_t> test(InOutData320::NUM_WORDS, 0);
     
-    gen_random_vectors(test);
+    // gen_random_vectors(test);
     
 
     // проверка создания объекта на пример конструктор по определенным 32 битным словам
     InOutData320 obj_1{
-        test[0], test[1],
-        test[2], test[3],
-        test[4], test[5],
-        test[6], test[7],
-        test[8], test[9]
+        0x12345678, 0x12345678,
+        0x12345678, 0x12345678,
+        0x12345678, 0x12345678,
+        0x12345678, 0x12345678,
+        0x12345678, 0x12345678
     };
+
+    std::cout << "0x"
+        << std::hex << std::setw(8) << std::setfill('0') 
+        << obj_1.get_word_little_endian(0)
+        << std::setfill(' ')
+        << std::endl;
+
+    std::cout << "0x"
+        << std::hex << std::setw(8) << std::setfill('0') 
+        << obj_1.get_word_big_endian(0)
+        << std::setfill(' ')
+        << std::endl;
+
+
+    obj_1.set_word(0, 0xaabbccdd);
+
+    std::cout << "0x"
+        << std::hex << std::setw(8) << std::setfill('0') 
+        << obj_1.get_word(0)
+        << std::setfill(' ')
+        << std::endl;
+
+    return 0;
 }

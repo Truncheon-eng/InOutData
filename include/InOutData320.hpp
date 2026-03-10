@@ -110,6 +110,29 @@ struct InOutData320 {
 	void convert_big_to_little_endian(uint8_t* dest, 
 										const uint8_t* src, 
 										size_t len);
+	
+	// -------------------------------------------------
+	// Утилиты для порядка байт
+	// -------------------------------------------------
+	static uint32_t swap_endian(uint32_t value);
+	
+	// Доступ к байтам
+	uint8_t get_byte(int index) const; // --------------
+	void set_byte(int index, 
+				  uint8_t value); // --------------
+	
+	// Доступ к словам (little-endian семантика)
+	uint32_t get_word(int index) const; // --------------
+	void set_word(int index, 
+				  uint32_t value); // --------------
+	
+	// Доступ к словам с указанием порядка
+	uint32_t get_word_little_endian(int index) const; // --------------
+	uint32_t get_word_big_endian(int index) const; // --------------
+	void set_word_little_endian(int index, 
+								uint32_t value); // --------------
+	void set_word_big_endian(int index, 
+							 uint32_t value);
 };
 
 #endif // IN_OUT_DATA_320_HPP

@@ -156,3 +156,95 @@ void InOutData320::convert_big_to_little_endian(uint8_t* dest,
 		dest[i] = src[len - 1 - i];
 	}
 }
+
+// получение байта
+uint8_t InOutData320::get_byte(int index) const {
+	if (index < 0 || index >= NUM_BYTES) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ 
+			 << " byte index error! Index=" << index 
+			 << ", valid range: 0-" << (NUM_BYTES-1) << NORMAL << endl;
+		return 0;
+	}
+	return bytes[index];
+}
+
+// установка байта
+void InOutData320::set_byte(int index, 
+							uint8_t value) {
+	if (index < 0 || index >= NUM_BYTES) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ 
+			 << " byte index error! Index=" << index 
+			 << ", valid range: 0-" << (NUM_BYTES-1) << NORMAL << endl;
+		return;
+	}
+	bytes[index] = value;
+}
+
+
+// получение 4 байтов (одного слова)
+uint32_t InOutData320::get_word(int index) const { 
+	if (index < 0 || index >= NUM_WORDS) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ 
+			 << " word index error! Index=" << index 
+			 << ", valid range: 0-" << (NUM_WORDS-1) << NORMAL << endl;
+		return 0;
+	}
+	return words[index];
+}
+
+// установка 4 байтов (одного слова)
+void InOutData320::set_word(int index, 
+							uint32_t value) {
+	if (index < 0 || index >= NUM_WORDS) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ 
+			 << " word index error! Index=" << index 
+			 << ", valid range: 0-" << (NUM_WORDS-1) << NORMAL << endl;
+		return;
+	}
+	words[index] = value;
+}
+
+
+// изменение порядка байт с little-endian на big-endian
+
+uint32_t InOutData320::swap_endian(uint32_t value) {
+	return ((value & 0x000000FF) << 24) |
+		   ((value & 0x0000FF00) << 8) |
+		   ((value & 0x00FF0000) >> 8) |
+		   ((value & 0xFF000000) >> 24);
+}
+
+// -------------------------------------------------
+// Методы доступа к словам с указанием порядка
+// -------------------------------------------------
+uint32_t InOutData320::get_word_little_endian(int index) const {
+	if (index < 0 || index >= NUM_WORDS) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ << " index error !\t" 
+			 << NORMAL << endl;
+		return 0;
+	}
+	return words[index];
+}
+
+uint32_t InOutData320::get_word_big_endian(int index) const {
+	if (index < 0 || index >= NUM_WORDS) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ << " index error !\t" 
+			<< NORMAL << endl;
+		return 0;
+	}
+	return swap_endian(words[index]);
+}
+
+void InOutData320::set_word_little_endian(int index, 
+										  uint32_t value) {
+	if (index >= 0 && index < NUM_WORDS) {
+		words[index] = value;
+	}
+}
+
+void InOutData320::set_word_big_endian(int index, 
+									   uint32_t value) {
+	if (index >= 0 && index < NUM_WORDS) {
+		words[index] = swap_endian(value);
+	}
+}
