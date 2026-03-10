@@ -133,6 +133,10 @@ struct InOutData320 {
 								uint32_t value); // --------------
 	void set_word_big_endian(int index, 
 							 uint32_t value);
+
+	bool get_bit(int bit_index) const;
+	void set_bit(int bit_index, 
+				 bool value);
 };
 
 #endif // IN_OUT_DATA_320_HPP

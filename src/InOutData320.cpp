@@ -248,3 +248,29 @@ void InOutData320::set_word_big_endian(int index,
 		words[index] = swap_endian(value);
 	}
 }
+
+bool InOutData320::get_bit(int bit_index) const {
+	if (bit_index < 0 || bit_index >= WIDTH) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ 
+			 << " bit index error! Index=" << bit_index 
+			 << ", valid range: 0-" << (WIDTH-1) << NORMAL << endl;
+		return false;
+	}
+
+	int byte_idx = bit_index / 8;
+	int bit_in_byte = bit_index % 8;
+	return (bytes[byte_idx] >> bit_in_byte) & 0x01;
+}
+
+void InOutData320::set_bit(int bit_index, bool value) {
+	if (bit_index < 0 || bit_index >= WIDTH) return;
+	
+	int byte_idx = bit_index / 8;
+	int bit_in_byte = bit_index % 8;
+	
+	if (value) {
+		bytes[byte_idx] |= (1u << bit_in_byte);
+	} else {
+		bytes[byte_idx] &= ~(1u << bit_in_byte);
+	}
+}
