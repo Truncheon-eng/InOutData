@@ -27,5 +27,15 @@ int main(int argc, char * argv[]) {
 
     obj_1.print_hex();
 
+    std::array<uint32_t, InOutData320::NUM_WORDS> arr {obj_1.to_array()};
+    
+    for(size_t i = 0; i != arr.size(); i++) {
+        std::cout << arr[i];
+        if (i == arr.size() - 1)
+            std::cout << std::endl;
+        else
+            std::cout << " ";
+    }
+
     return 0;
 }

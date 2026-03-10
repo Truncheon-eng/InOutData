@@ -488,3 +488,14 @@ void InOutData320::print_binary(OutputFormat format, const char* name) const {
 	if (strlen(name) > 0) std::cout << ": ";
 	std::cout << to_binary_string(format) << std::endl;
 }
+
+
+std::array<uint32_t, 10> InOutData320::to_array() const {
+	std::array<uint32_t, 10> arr;
+	std::copy(words, words + NUM_WORDS, arr.begin());
+	return arr;
+}
+
+void InOutData320::from_array(const std::array<uint32_t, 10>& arr) {
+	std::copy(arr.begin(), arr.end(), words);
+}

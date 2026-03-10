@@ -171,6 +171,12 @@ struct InOutData320 {
 	void print_hex(OutputFormat format, const char* name) const; // --------------
 	void print_binary(const char* name = "") const; // --------------
 	void print_binary(OutputFormat format, const char* name) const; // --------------
+
+	// -------------------------------------------------
+	// Конвертация в массивы
+	// -------------------------------------------------
+	std::array<uint32_t, 10> to_array() const; // --------------
+	void from_array(const std::array<uint32_t, 10>& arr);
 };
 
 #endif // IN_OUT_DATA_320_HPP
