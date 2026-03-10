@@ -17,8 +17,15 @@ int main(int argc, char * argv[]) {
         0xffffffff, 0xffffffff
     };
 
+    obj_1.set_default_output_format(InOutData320::OutputFormat::HEX_LITTLE_ENDIAN);
+
+    obj_1.print_hex();
+
     std::cout << "Bit " << 10 << ": " << (obj_1.get_bit(10) ? "1" : "0" ) << std::endl;
     obj_1.set_bit(10, false);
     std::cout << "Bit " << 10 << ": " << (obj_1.get_bit(10) ? "1" : "0" ) << std::endl;
+
+    obj_1.print_hex();
+
     return 0;
 }

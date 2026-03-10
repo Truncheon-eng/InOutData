@@ -132,11 +132,45 @@ struct InOutData320 {
 	void set_word_little_endian(int index, 
 								uint32_t value); // --------------
 	void set_word_big_endian(int index, 
-							 uint32_t value);
+							 uint32_t value); // --------------
 
-	bool get_bit(int bit_index) const;
+	bool get_bit(int bit_index) const; // --------------
 	void set_bit(int bit_index, 
-				 bool value);
+				 bool value); // --------------
+
+
+	// -------------------------------------------------
+	// Методы вывода
+	// -------------------------------------------------
+	enum class OutputFormat {
+		HEX_BIG_ENDIAN,
+		HEX_LITTLE_ENDIAN,
+		BINARY_BIG_ENDIAN,
+		BINARY_LITTLE_ENDIAN
+	};
+	
+	// -------------------------------------------------
+	// Методы вывода
+	// -------------------------------------------------
+	inline static OutputFormat default_output_format = OutputFormat::HEX_LITTLE_ENDIAN;
+	static void set_default_output_format(OutputFormat format); // --------------
+	
+	void print(const char* name = "") const; // --------------
+	void print_bytes(const char* name = "") const; // --------------
+	void print_words_and_bytes(const char* name = "") const; // --------------
+	void print_detailed(const char* name = "") const; // --------------
+	void print_raw_memory(const char* name = "") const; // --------------
+
+	std::string to_hex_string() const; // --------------
+	std::string to_hex_string(OutputFormat format) const; // --------------
+	std::string to_binary_string() const; // --------------
+	std::string to_binary_string(OutputFormat format) const; // --------------
+	std::string to_raw_string(bool as_hex = true) const; // --------------
+	
+	void print_hex(const char* name = "") const; // --------------
+	void print_hex(OutputFormat format, const char* name) const; // --------------
+	void print_binary(const char* name = "") const; // --------------
+	void print_binary(OutputFormat format, const char* name) const; // --------------
 };
 
 #endif // IN_OUT_DATA_320_HPP

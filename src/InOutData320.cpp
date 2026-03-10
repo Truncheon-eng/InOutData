@@ -274,3 +274,217 @@ void InOutData320::set_bit(int bit_index, bool value) {
 		bytes[byte_idx] &= ~(1u << bit_in_byte);
 	}
 }
+
+void InOutData320::set_default_output_format(OutputFormat format) {
+	default_output_format = format;
+}
+
+// -------------------------------------------------
+// Методы вывода
+// -------------------------------------------------
+void InOutData320::print(const char* name) const {
+	std::cout << name << " InOutData320 (320 bits, LITTLE-ENDIAN):" << std::endl;
+	
+	std::cout << "  Memory words: { ";
+	for (int i = 0; i < NUM_WORDS; i++) {
+		std::cout << "0x" << std::hex << std::setw(8) << std::setfill('0') 
+				  << words[i];
+		if (i < 9) std::cout << ", ";
+		if ((i + 1) % 4 == 0 && i < 9) std::cout << std::endl << "                ";
+	}
+	std::cout << " }" << std::dec << std::endl;
+}
+
+void InOutData320::print_bytes(const char* name) const {
+	std::cout << name << " Bytes (little-endian):" << std::endl;
+	std::cout << "  ";
+	for (int i = 0; i < NUM_BYTES; i++) {
+		std::cout << "0x" << std::hex << std::setw(2) << std::setfill('0') 
+				  << static_cast<int>(bytes[i]);
+		if (i < NUM_BYTES - 1) {
+			std::cout << " ";
+			if ((i + 1) % 16 == 0) std::cout << std::endl << "  ";
+			else if ((i + 1) % 8 == 0) std::cout << "  ";
+		}
+	}
+	std::cout << std::dec << std::endl;
+}
+
+void InOutData320::print_words_and_bytes(const char* name) const {
+	std::cout << name << " Words and bytes:" << std::endl;
+	for (int i = 0; i < NUM_WORDS; i++) {
+		std::cout << "  w" << i << " = 0x" << std::hex << std::setw(8) 
+				  << std::setfill('0') << words[i] << std::dec
+				  << "  bytes[" << (i*4) << "-" << (i*4+3) << "] = ";
+		for (int j = 0; j < NUM_BYTES; j++) {
+			std::cout << "0x" << std::hex << std::setw(2) << std::setfill('0')
+					  << static_cast<int>(bytes[i*4 + j]);
+			if (j < 3) std::cout << " ";
+		}
+		std::cout << std::dec << std::endl;
+	}
+}
+
+void InOutData320::print_detailed(const char* name) const {
+	std::cout << "\n=== " << name << " ===" << std::endl;
+	
+	std::cout << "Memory layout (little-endian):" << std::endl;
+	std::cout << "  Bytes: ";
+	for (int i = 0; i < NUM_BYTES; i++) {
+		std::cout << "[" << std::setw(2) << i << "]=0x" 
+				  << std::hex << std::setw(2) << std::setfill('0')
+				  << static_cast<int>(bytes[i]) << std::dec;
+		if (i < NUM_BYTES - 1) std::cout << " ";
+		if ((i + 1) % 8 == 0 && i < NUM_BYTES - 1) std::cout << std::endl << "         ";
+	}
+	std::cout << std::endl;
+	
+	std::cout << "\n32-bit words in memory:" << std::endl;
+	for (int i = 0; i < NUM_WORDS; i++) {
+		std::cout << "  word[" << i << "] = 0x" << std::hex << std::setw(8) 
+				  << std::setfill('0') << get_word_little_endian(i) << std::dec
+				  << "  (BE: 0x" << std::hex << std::setw(8) 
+				  << get_word_big_endian(i) << ")" << std::dec << std::endl;
+	}
+	
+	std::cout << "\nString representations:" << std::endl;
+	std::cout << "  Hex BE:      " << to_hex_string(OutputFormat::HEX_BIG_ENDIAN) << std::endl;
+	std::cout << "  Hex LE:      " << to_hex_string(OutputFormat::HEX_LITTLE_ENDIAN) << std::endl;
+}
+
+void InOutData320::print_raw_memory(const char* name) const {
+	std::cout << name;
+	if (strlen(name) > 0) std::cout << ": ";
+	
+	std::cout << "Raw bytes in memory: ";
+	for (int i = 0; i < NUM_BYTES; i++) {
+		std::cout << "0x" << std::hex << std::setw(2) << std::setfill('0')
+				  << static_cast<int>(bytes[i]);
+		if (i < NUM_BYTES - 1) std::cout << " ";
+		if ((i + 1) % 16 == 0 && i < NUM_BYTES - 1) std::cout << std::endl << "                     ";
+	}
+	std::cout << std::dec << std::endl;
+}
+
+// -------------------------------------------------
+// Строковые представления
+// -------------------------------------------------
+std::string InOutData320::to_hex_string() const {
+	return to_hex_string(default_output_format);
+}
+
+std::string InOutData320::to_hex_string(OutputFormat format) const {
+	std::stringstream ss;
+	
+	switch (format) {
+		case OutputFormat::HEX_BIG_ENDIAN:
+			ss << "0x";
+			for (int i = NUM_BYTES - 1; i >= 0; i--) {
+				ss << std::hex << std::setw(2) << std::setfill('0') 
+				   << static_cast<int>(bytes[i]);
+			}
+			break;
+			
+		case OutputFormat::HEX_LITTLE_ENDIAN:
+			ss << "0x";
+			for (int i = 0; i < NUM_BYTES; i++) {
+				ss << std::hex << std::setw(2) << std::setfill('0') 
+				   << static_cast<int>(bytes[i]);
+			}
+			break;
+			
+		default:
+			ss << "0x";
+			for (int i = NUM_BYTES - 1; i >= 0; i--) {
+				ss << std::hex << std::setw(2) << std::setfill('0') 
+				   << static_cast<int>(bytes[i]);
+			}
+			break;
+	}
+	
+	return ss.str();
+}
+
+std::string InOutData320::to_binary_string() const {
+	return to_binary_string(
+		(default_output_format == OutputFormat::HEX_BIG_ENDIAN || 
+		 default_output_format == OutputFormat::HEX_LITTLE_ENDIAN) ?
+		OutputFormat::BINARY_BIG_ENDIAN : default_output_format
+	);
+}
+
+std::string InOutData320::to_binary_string(OutputFormat format) const {
+	std::stringstream ss;
+	
+	switch (format) {
+		case OutputFormat::BINARY_BIG_ENDIAN:
+			for (int i = NUM_BYTES - 1; i >= 0; i--) {
+				ss << std::bitset<8>(bytes[i]);
+				if (i > 0) ss << " ";
+				if ((NUM_BYTES - i) % 4 == 0 && i > 0) ss << std::endl;
+			}
+			break;
+			
+		case OutputFormat::BINARY_LITTLE_ENDIAN:
+			for (int i = 0; i < NUM_BYTES; i++) {
+				ss << std::bitset<8>(bytes[i]);
+				if (i < NUM_BYTES - 1) ss << " ";
+				if ((i + 1) % 4 == 0 && i < NUM_BYTES - 1) ss << std::endl;
+			}
+			break;
+			
+		default:
+			for (int i = NUM_BYTES - 1; i >= 0; i--) {
+				ss << std::bitset<8>(bytes[i]);
+				if (i > 0) ss << " ";
+				if ((NUM_BYTES - i) % 4 == 0 && i > 0) ss << std::endl;
+			}
+			break;
+	}
+	
+	return ss.str();
+}
+
+std::string InOutData320::to_raw_string(bool as_hex) const {
+	std::stringstream ss;
+	if (as_hex) {
+		ss << std::hex << std::setfill('0');
+		for (int i = 0; i < NUM_BYTES; i++) {
+			ss << std::setw(2) << static_cast<int>(bytes[i]);
+			if (i < NUM_BYTES - 1) ss << " ";
+			if ((i + 1) % 16 == 0 && i < NUM_BYTES - 1) ss << std::endl;
+		}
+	} else {
+		for (int i = 0; i < NUM_BYTES; i++) {
+			ss << std::bitset<8>(bytes[i]);
+			if (i < NUM_BYTES - 1) ss << " ";
+			if ((i + 1) % 4 == 0 && i < NUM_BYTES - 1) ss << std::endl;
+		}
+	}
+	return ss.str();
+}
+
+void InOutData320::print_hex(const char* name) const {
+	print_hex(default_output_format, name);
+}
+
+void InOutData320::print_hex(OutputFormat format, const char* name) const {
+	std::cout << name;
+	if (strlen(name) > 0) std::cout << ": ";
+	std::cout << to_hex_string(format) << std::endl;
+}
+
+void InOutData320::print_binary(const char* name) const {
+	print_binary(
+		(default_output_format == OutputFormat::HEX_BIG_ENDIAN || 
+		 default_output_format == OutputFormat::HEX_LITTLE_ENDIAN) ?
+		OutputFormat::BINARY_BIG_ENDIAN : default_output_format,
+		name
+	);
+}
+
+void InOutData320::print_binary(OutputFormat format, const char* name) const {
+	std::cout << name;
+	if (strlen(name) > 0) std::cout << ": ";
+	std::cout << to_binary_string(format) << std::endl;
+}
