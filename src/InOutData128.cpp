@@ -143,3 +143,81 @@ bool InOutData128::check_vector_bounds(const std::vector<uint8_t>& vec,
 	}
 	return true;
 }
+
+// -------------------------------------------------
+// методы установки байт/бит
+// -------------------------------------------------
+
+uint8_t InOutData128::get_byte(int index) const {
+	if (index < 0 || index >= NUM_BYTES) return 0;
+	return bytes[index];
+}
+
+void InOutData128::set_from_bytes(const uint8_t* data, 
+								  size_t len, 
+								  size_t offset) {
+	if (!data || len == 0) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ 
+			 << " index error !\t" << NORMAL << endl;
+		return;
+	}
+	if (offset >= static_cast<size_t>(NUM_BYTES)) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ 
+			 << " index error !\t" << NORMAL << endl;
+		return;
+	}
+	size_t copy_len = std::min(len, static_cast<size_t>(NUM_BYTES) - offset);
+	if (copy_len > 0) {
+		std::memcpy(bytes + offset, data, copy_len);
+	}
+}
+
+void InOutData128::set_from_bytes_big_endian(const uint8_t* data, 
+											size_t len, 
+											size_t offset) {
+	if (!data || len == 0) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ 
+			 << " index error !\t" << NORMAL << endl;
+		return;
+	}
+	
+	if (offset >= static_cast<size_t>(NUM_BYTES)) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ 
+				<< " index error !\t" << NORMAL << endl;
+		return;
+	}
+	size_t copy_len = std::min(len, static_cast<size_t>(NUM_BYTES) - offset);
+	if (copy_len > 0) {
+		convert_big_to_little_endian(bytes + offset, data, copy_len);
+	}
+}
+
+void InOutData128::set_from_bytes_little_endian(const uint8_t* data, 
+												size_t len, 
+												size_t offset) {
+	set_from_bytes(data, len, offset);
+}
+
+void InOutData128::set_byte(int index, 
+							uint8_t value) {
+	if (index < 0 || index >= NUM_BYTES) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ 
+			 << " index error !\t" << NORMAL << endl;
+		return;
+	};
+	bytes[index] = value;
+}
+
+uint32_t InOutData128::bytes_to_word_big_endian(const uint8_t* bytes) {
+	return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
+}
+
+uint32_t InOutData128::bytes_to_word_little_endian(const uint8_t* bytes) {
+	return bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24);
+}
+
+void InOutData128::convert_big_to_little_endian(uint8_t* dest, const uint8_t* src, size_t len) {
+	for (size_t i = 0; i < len; i++) {
+		dest[i] = src[len - 1 - i];
+	}
+}

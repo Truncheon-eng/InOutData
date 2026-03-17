@@ -77,14 +77,29 @@ struct InOutData128 {
 	// Методы очистки и доступа
 	// -------------------------------------------------
 	void clear();
-
+	
     // -------------------------------------------------
     // методы установки байт/бит
     // -------------------------------------------------
+	uint8_t get_byte(int index) const;
+	
+    void set_byte(int index, 
+                  uint8_t value);
+    
     void set_from_bytes(const uint8_t* data, 
                                     size_t len, 
                                     size_t offset = 0);
 
+	// Для работы с разным порядком байт
+	void set_from_bytes_big_endian(const uint8_t* data, 
+								   size_t len, 
+								   size_t offset = 0);
+	void set_from_bytes_little_endian(const uint8_t* data, 
+									  size_t len, 
+									  size_t offset = 0);
+
+	static uint32_t bytes_to_word_big_endian(const uint8_t* bytes);
+	static uint32_t bytes_to_word_little_endian(const uint8_t* bytes);
 	// -------------------------------------------------
 	// Методы работы с векторами
 	// -------------------------------------------------
@@ -98,11 +113,15 @@ struct InOutData128 {
 	void from_vector_big_endian(const std::vector<uint8_t>& vec, 
 								size_t start_idx = 0);
 	
-
+private:
     // проверка границ передаваемых параметров
     bool check_vector_bounds(const std::vector<uint8_t>& vec,
 							 size_t start_idx,
 							 const char* method_name) const;
+
+	static void convert_big_to_little_endian(uint8_t* dest, 
+											 const uint8_t* src, 
+											 size_t len);
 };
 
 #endif // IN_OUT_DATA_128_HPP
