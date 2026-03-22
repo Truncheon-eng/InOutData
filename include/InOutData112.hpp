@@ -84,30 +84,30 @@ struct InOutData112 {
 	// -------------------------------------------------
 	InOutData112& operator=(const InOutData112& other);
 	InOutData112& operator=(InOutData112&& other) noexcept;
-
+	
 	// -------------------------------------------------
 	// Базовые методы
 	// -------------------------------------------------
 	void clear();
-
+	
 	// Доступ к байтам
 	uint8_t get_byte(int index) const;
 	void set_byte(int index, uint8_t value);
-
+	
 	// Доступ к словам (little-endian семантика)
 	uint32_t get_word(int index) const;
 	void set_word(int index, uint32_t value);
-
+	
 	// Доступ к словам с указанием порядка
 	uint32_t get_word_little_endian(int index) const;
 	uint32_t get_word_big_endian(int index) const;
 	void set_word_little_endian(int index, uint32_t value);
 	void set_word_big_endian(int index, uint32_t value);
-
+	
 	// Установка всех слов
 	void set_all_words(uint32_t word0, uint32_t word1, 
 					   uint32_t word2, uint32_t word3);
-
+	
 	// -------------------------------------------------
 	// Методы установки из байтовых массивов
 	// -------------------------------------------------
@@ -123,31 +123,11 @@ struct InOutData112 {
 	void set_from_bytes_big_endian(const uint8_t* data, 
 								   size_t len, 
 								   size_t offset = 0);
-
-    // -------------------------------------------------
-	// Утилиты для порядка байт
-	// -------------------------------------------------
-	static uint32_t swap_endian(uint32_t value);
-	static uint32_t bytes_to_word_big_endian(const uint8_t* bytes);
-	static uint32_t bytes_to_word_little_endian(const uint8_t* bytes);
-
-
-	// -------------------------------------------------
-	// Побитовые операции
-	// -------------------------------------------------
-	bool get_bit(int bit_index) const;
-	void set_bit(int bit_index, bool value);
-
-	// -------------------------------------------------
-	// Утилиты для усечения размерной сетки
-	// -------------------------------------------------
-	void apply_mask();
-	bool is_masked_correctly() const;
-
+	
 	// -------------------------------------------------
 	// Методы работы с векторами
 	// -------------------------------------------------
-    // Универсальные (по умолчанию little-endian)
+	// Универсальные (по умолчанию little-endian)
 	void from_vector(const std::vector<uint8_t>& vec, 
 					 size_t start_idx = 0);
 	std::vector<uint8_t> to_vector() const;
@@ -159,7 +139,19 @@ struct InOutData112 {
 								size_t start_idx = 0);
 	std::vector<uint8_t> to_vector_little_endian() const;
 	std::vector<uint8_t> to_vector_big_endian() const;
-
+	
+	// -------------------------------------------------
+	// Побитовые операции
+	// -------------------------------------------------
+	bool get_bit(int bit_index) const;
+	void set_bit(int bit_index, bool value);
+	
+	// -------------------------------------------------
+	// Утилиты для усечения размерной сетки
+	// -------------------------------------------------
+	void apply_mask();
+	bool is_masked_correctly() const;
+	
 	// -------------------------------------------------
 	// Методы вывода
 	// -------------------------------------------------
@@ -169,36 +161,33 @@ struct InOutData112 {
 		BINARY_BIG_ENDIAN,
 		BINARY_LITTLE_ENDIAN
 	};
-
-    static OutputFormat default_output_format;
+	
+	static OutputFormat default_output_format;
 	static void set_default_output_format(OutputFormat format);
-
-	// -------------------------------------------------
-    // Методы для вывода информации
-	// -------------------------------------------------
-
+	
 	void print(const char* name = "") const;
 	void print_bytes(const char* name = "") const;
 	void print_words_and_bytes(const char* name = "") const;
 	void print_detailed(const char* name = "") const;
 	void print_raw_memory(const char* name = "") const;
-
+	
 	std::string to_hex_string() const;
 	std::string to_hex_string(OutputFormat format) const;
 	std::string to_binary_string() const;
 	std::string to_binary_string(OutputFormat format) const;
 	std::string to_raw_string(bool as_hex = true) const;
-
+	
 	void print_hex(const char* name = "") const;
 	void print_hex(OutputFormat format, const char* name) const;
 	void print_binary(const char* name = "") const;
 	void print_binary(OutputFormat format, const char* name) const;
+	
 	// -------------------------------------------------
 	// Конвертация в массивы
 	// -------------------------------------------------
 	std::array<uint32_t, 4> to_array() const;
 	void from_array(const std::array<uint32_t, 4>& arr);
-
+	
 	// -------------------------------------------------
 	// Операторы
 	// -------------------------------------------------
@@ -222,13 +211,43 @@ struct InOutData112 {
 	bool operator>(const InOutData112& other) const;
 	bool operator<=(const InOutData112& other) const;
 	bool operator>=(const InOutData112& other) const;
+	
+	// -------------------------------------------------
+	// Статические фабричные методы
+	// -------------------------------------------------
+	static InOutData112 from_hex_string(const std::string& hex_str);
+	
+	static InOutData112 from_words(uint32_t w0, uint32_t w1, 
+								   uint32_t w2, uint32_t w3);
+	
+	static InOutData112 from_words_little_endian(uint32_t w0, uint32_t w1, 
+												 uint32_t w2, uint32_t w3);
+	
+	static InOutData112 from_words_big_endian(uint32_t w0, uint32_t w1, 
+											  uint32_t w2, uint32_t w3);
+	
+	static InOutData112 from_bytes(const uint8_t* bytes, 
+								   size_t len = NUM_BYTES,
+								   InitOrder order = InitOrder::LITTLE_ENDIAN_IN);
+	static InOutData112 from_bytes_little_endian(const uint8_t* bytes, 
+												 size_t len = NUM_BYTES);
+	static InOutData112 from_bytes_big_endian(const uint8_t* bytes, 
+											  size_t len = NUM_BYTES);
+	
+	// -------------------------------------------------
+	// Утилиты для порядка байт
+	// -------------------------------------------------
+	static uint32_t swap_endian(uint32_t value);
+	static uint32_t bytes_to_word_big_endian(const uint8_t* bytes);
+	static uint32_t bytes_to_word_little_endian(const uint8_t* bytes);
+	
 	// -------------------------------------------------
 	// Для совместимости с Verilator
 	// -------------------------------------------------
 #ifdef VERILATOR
 	operator VlWide<4>() const;
 #endif
-
+	
 private:
 	// Вспомогательные методы
 	static void convert_big_to_little_endian(uint8_t* dest, 
@@ -238,4 +257,5 @@ private:
 	// Вспомогательный метод для применения маски
 	void apply_mask_internal();
 };
+
 #endif // IN_OUT_DATA_112_HPP

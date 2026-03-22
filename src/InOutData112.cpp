@@ -91,10 +91,6 @@ bool InOutData112::is_masked_correctly() const {
 	return (w3 & ~MASK_LAST_WORD) == 0;
 }
 
-bool InOutData112::is_masked_correctly() const {
-	return (w3 & ~MASK_LAST_WORD) == 0;
-}
-
 uint8_t InOutData112::get_byte(int index) const {
 	if (index < 0 || index >= NUM_BYTES) {
 		cerr << RED << CROSS_MARK << __FUNCTION__ 
@@ -148,7 +144,6 @@ void InOutData112::set_word(int index, uint32_t value) {
 		words[index] = value;
 	}
 }
-
 
 uint32_t InOutData112::get_word_little_endian(int index) const {
 	return get_word(index);
@@ -280,13 +275,6 @@ void InOutData112::from_vector_big_endian(const std::vector<uint8_t>& vec,
 	}
 	
 	apply_mask_internal();
-}
-
-uint32_t InOutData112::swap_endian(uint32_t value) {
-	return ((value & 0x000000FF) << 24) |
-		   ((value & 0x0000FF00) << 8) |
-		   ((value & 0x00FF0000) >> 8) |
-		   ((value & 0xFF000000) >> 24);
 }
 
 std::vector<uint8_t> InOutData112::to_vector() const {
@@ -471,7 +459,6 @@ std::string InOutData112::to_hex_string(OutputFormat format) const {
 	
 	return ss.str();
 }
-
 
 std::string InOutData112::to_hex_string() const {
 	return to_hex_string(default_output_format);
@@ -700,3 +687,129 @@ bool InOutData112::operator<=(const InOutData112& other) const {
 bool InOutData112::operator>=(const InOutData112& other) const {
 	return std::memcmp(bytes, other.bytes, NUM_BYTES) >= 0;
 }
+
+// -------------------------------------------------
+// Статические фабричные методы
+// -------------------------------------------------
+InOutData112 InOutData112::from_hex_string(const std::string& hex_str) {
+	InOutData112 result;
+	
+	if (hex_str.empty()) {
+		return result;
+	}
+	
+	std::string clean_str = hex_str;
+	
+	// Убираем префикс
+	if (hex_str.size() >= 2 && hex_str.compare(0, 2, "0x") == 0) {
+		clean_str = hex_str.substr(2);
+	} else if (hex_str.size() >= 2 && hex_str.compare(0, 2, "0X") == 0) {
+		clean_str = hex_str.substr(2);
+	}
+	
+	constexpr size_t HEX_CHARS_NEEDED = NUM_BYTES * 2;
+	
+	// Дополняем/обрезаем строку
+	if (clean_str.length() < HEX_CHARS_NEEDED) {
+		clean_str = std::string(HEX_CHARS_NEEDED - clean_str.length(), '0') + clean_str;
+	} else if (clean_str.length() > HEX_CHARS_NEEDED) {
+		clean_str = clean_str.substr(clean_str.length() - HEX_CHARS_NEEDED);
+	}
+	
+	// Hex строка в big-endian формате (первый байт в строке = старший байт)
+	// Конвертируем в little-endian для хранения в памяти
+	for (size_t i = 0; i < NUM_BYTES; i++) {
+		size_t hex_pos = (NUM_BYTES - 1 - i) * 2;  // реверсируем!
+		std::string byte_str = clean_str.substr(hex_pos, 2);
+		
+		try {
+			result.bytes[i] = static_cast<uint8_t>(std::stoul(byte_str, nullptr, 16));
+		} catch (...) {
+			result.bytes[i] = 0;
+		}
+	}
+	
+	result.apply_mask_internal();
+	return result;
+}
+
+InOutData112 InOutData112::from_words(uint32_t w0, uint32_t w1, 
+									  uint32_t w2, uint32_t w3) {
+	return InOutData112(w0, w1, w2, w3);
+}
+
+InOutData112 InOutData112::from_words_little_endian(uint32_t w0, uint32_t w1, 
+													uint32_t w2, uint32_t w3) {
+	return InOutData112(w0, w1, w2, w3);
+}
+
+InOutData112 InOutData112::from_words_big_endian(uint32_t w0, uint32_t w1, 
+												 uint32_t w2, uint32_t w3) {
+	InOutData112 result;
+	result.w0 = swap_endian(w0);
+	result.w1 = swap_endian(w1);
+	result.w2 = swap_endian(w2);
+	result.w3 = swap_endian(w3) & MASK_LAST_WORD;
+	return result;
+}
+
+InOutData112 InOutData112::from_bytes(const uint8_t* bytes, 
+									  size_t len,
+									  InitOrder order) {
+	if (order == InitOrder::LITTLE_ENDIAN_IN) {
+		return from_bytes_little_endian(bytes, len);
+	} else {
+		return from_bytes_big_endian(bytes, len);
+	}
+}
+
+InOutData112 InOutData112::from_bytes_little_endian(const uint8_t* bytes, 
+													size_t len) {
+	InOutData112 result;
+	result.set_from_bytes_little_endian(bytes, len);
+	return result;
+}
+
+InOutData112 InOutData112::from_bytes_big_endian(const uint8_t* bytes, 
+												 size_t len) {
+	InOutData112 result;
+	result.set_from_bytes_big_endian(bytes, len);
+	return result;
+}
+
+// -------------------------------------------------
+// Утилиты для порядка байт
+// -------------------------------------------------
+uint32_t InOutData112::swap_endian(uint32_t value) {
+	return ((value & 0x000000FF) << 24) |
+		   ((value & 0x0000FF00) << 8) |
+		   ((value & 0x00FF0000) >> 8) |
+		   ((value & 0xFF000000) >> 24);
+}
+
+uint32_t InOutData112::bytes_to_word_big_endian(const uint8_t* bytes) {
+	return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
+}
+
+uint32_t InOutData112::bytes_to_word_little_endian(const uint8_t* bytes) {
+	return bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24);
+}
+
+void InOutData112::convert_big_to_little_endian(uint8_t* dest, 
+												const uint8_t* src, 
+												size_t len) {
+	for (size_t i = 0; i < len; i++) {
+		dest[i] = src[len - 1 - i];
+	}
+}
+
+#ifdef VERILATOR
+InOutData112::operator VlWide<4>() const {
+	VlWide<4> result;
+	result[0] = w0;
+	result[1] = w1;
+	result[2] = w2;
+	result[3] = w3 & MASK_LAST_WORD;
+	return result;
+}
+#endif
