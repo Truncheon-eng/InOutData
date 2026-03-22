@@ -90,6 +90,15 @@ struct InOutData112 {
 	// -------------------------------------------------
 	void clear();
 
+	// Доступ к байтам
+	uint8_t get_byte(int index) const;
+	void set_byte(int index, uint8_t value);
+
+	// Доступ к словам (little-endian семантика)
+	uint32_t get_word(int index) const;
+	void set_word(int index, uint32_t value);
+
+    
 	// -------------------------------------------------
 	// Методы установки из байтовых массивов
 	// -------------------------------------------------

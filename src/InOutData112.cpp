@@ -90,3 +90,61 @@ void InOutData112::apply_mask() {
 bool InOutData112::is_masked_correctly() const {
 	return (w3 & ~MASK_LAST_WORD) == 0;
 }
+
+bool InOutData112::is_masked_correctly() const {
+	return (w3 & ~MASK_LAST_WORD) == 0;
+}
+
+uint8_t InOutData112::get_byte(int index) const {
+	if (index < 0 || index >= NUM_BYTES) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ 
+			 << " byte index error! Index=" << index 
+			 << ", valid range: 0-" << (NUM_BYTES-1) << NORMAL << endl;
+		return 0;
+	}
+	return bytes[index];
+}
+
+void InOutData112::set_byte(int index, uint8_t value) {
+	if (index < 0 || index >= NUM_BYTES) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ 
+			 << " byte index error! Index=" << index 
+			 << ", valid range: 0-" << (NUM_BYTES-1) << NORMAL << endl;
+		return;
+	}
+	bytes[index] = value;
+	
+	// Если изменили байты 12 или 13, применяем маску
+	if (index >= 12) {
+		apply_mask_internal();
+	}
+}
+
+uint32_t InOutData112::get_word(int index) const {
+	if (index < 0 || index >= NUM_WORDS) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ 
+			 << " word index error! Index=" << index 
+			 << ", valid range: 0-" << (NUM_WORDS-1) << NORMAL << endl;
+		return 0;
+	}
+	
+	if (index == 3) {
+		return w3 & MASK_LAST_WORD;
+	}
+	return words[index];
+}
+
+void InOutData112::set_word(int index, uint32_t value) {
+	if (index < 0 || index >= NUM_WORDS) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ 
+			 << " word index error! Index=" << index 
+			 << ", valid range: 0-" << (NUM_WORDS-1) << NORMAL << endl;
+		return;
+	}
+	
+	if (index == 3) {
+		w3 = value & MASK_LAST_WORD;
+	} else {
+		words[index] = value;
+	}
+}
