@@ -131,6 +131,13 @@ struct InOutData112 {
 	static uint32_t bytes_to_word_big_endian(const uint8_t* bytes);
 	static uint32_t bytes_to_word_little_endian(const uint8_t* bytes);
 
+
+	// -------------------------------------------------
+	// Побитовые операции
+	// -------------------------------------------------
+	bool get_bit(int bit_index) const;
+	void set_bit(int bit_index, bool value);
+
 	// -------------------------------------------------
 	// Утилиты для усечения размерной сетки
 	// -------------------------------------------------
@@ -164,7 +171,23 @@ struct InOutData112 {
 	};
 
     static OutputFormat default_output_format;
+	static void set_default_output_format(OutputFormat format);
 
+	// -------------------------------------------------
+    // Методы для вывода информации
+	// -------------------------------------------------
+
+	void print(const char* name = "") const;
+	void print_bytes(const char* name = "") const;
+	void print_words_and_bytes(const char* name = "") const;
+	void print_detailed(const char* name = "") const;
+	void print_raw_memory(const char* name = "") const;
+
+	std::string to_hex_string() const;
+	std::string to_hex_string(OutputFormat format) const;
+	std::string to_binary_string() const;
+	std::string to_binary_string(OutputFormat format) const;
+	std::string to_raw_string(bool as_hex = true) const;
 	// -------------------------------------------------
 	// Для совместимости с Verilator
 	// -------------------------------------------------

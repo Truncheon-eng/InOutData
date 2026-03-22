@@ -288,3 +288,186 @@ uint32_t InOutData112::swap_endian(uint32_t value) {
 		   ((value & 0x00FF0000) >> 8) |
 		   ((value & 0xFF000000) >> 24);
 }
+
+std::vector<uint8_t> InOutData112::to_vector() const {
+	return to_vector_little_endian();
+}
+
+std::vector<uint8_t> InOutData112::to_vector_little_endian() const {
+	return std::vector<uint8_t>(bytes, bytes + NUM_BYTES);
+}
+
+std::vector<uint8_t> InOutData112::to_vector_big_endian() const {
+	std::vector<uint8_t> result(NUM_BYTES);
+	for (size_t i = 0; i < NUM_BYTES; i++) {
+		result[NUM_BYTES - 1 - i] = bytes[i];
+	}
+	return result;
+}
+
+// -------------------------------------------------
+// Побитовые операции
+// -------------------------------------------------
+bool InOutData112::get_bit(int bit_index) const {
+	if (bit_index < 0 || bit_index >= TOTAL_BITS) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ 
+			 << " bit index error! Index=" << bit_index 
+			 << ", valid range: 0-" << (TOTAL_BITS-1) << NORMAL << endl;
+		return false;
+	}
+	
+	int byte_idx = bit_index / 8;
+	int bit_in_byte = bit_index % 8;
+	return (bytes[byte_idx] >> bit_in_byte) & 0x01;
+}
+
+void InOutData112::set_bit(int bit_index, bool value) {
+	if (bit_index < 0 || bit_index >= TOTAL_BITS) {
+		cerr << RED << CROSS_MARK << __FUNCTION__ 
+			 << " bit index error! Index=" << bit_index 
+			 << ", valid range: 0-" << (TOTAL_BITS-1) << NORMAL << endl;
+		return;
+	}
+	
+	int byte_idx = bit_index / 8;
+	int bit_in_byte = bit_index % 8;
+	
+	if (value) {
+		bytes[byte_idx] |= (1u << bit_in_byte);
+	} else {
+		bytes[byte_idx] &= ~(1u << bit_in_byte);
+	}
+	
+	// Если бит в последних 16 битах, применяем маску
+	if (bit_index >= 96) {
+		apply_mask_internal();
+	}
+}
+
+// -------------------------------------------------
+// Методы вывода
+// -------------------------------------------------
+void InOutData112::set_default_output_format(OutputFormat format) {
+	default_output_format = format;
+}
+
+void InOutData112::print(const char* name) const {
+	std::cout << name << " InOutData112 (112 bits, LITTLE-ENDIAN):" << std::endl;
+	
+	std::cout << "  Memory words: { ";
+	for (int i = 0; i < NUM_WORDS; i++) {
+		std::cout << "0x" << std::hex << std::setw(8) << std::setfill('0') 
+				  << get_word(i);
+		if (i < 3) std::cout << ", ";
+	}
+	std::cout << " }" << std::dec << std::endl;
+}
+
+void InOutData112::print_bytes(const char* name) const {
+	std::cout << name << " Bytes (little-endian):" << std::endl;
+	std::cout << "  ";
+	for (int i = 0; i < NUM_BYTES; i++) {
+		std::cout << "0x" << std::hex << std::setw(2) << std::setfill('0') 
+				  << static_cast<int>(bytes[i]);
+		if (i < NUM_BYTES - 1) {
+			std::cout << " ";
+			if ((i + 1) % 8 == 0) std::cout << std::endl << "  ";
+		}
+	}
+	std::cout << std::dec << std::endl;
+}
+
+void InOutData112::print_words_and_bytes(const char* name) const {
+	std::cout << name << " Words and bytes:" << std::endl;
+	for (int i = 0; i < NUM_WORDS; i++) {
+		std::cout << "  w" << i << " = 0x" << std::hex << std::setw(8) 
+				  << std::setfill('0') << get_word(i) << std::dec;
+		
+		if (i < 3) {
+			std::cout << "  bytes[" << (i*4) << "-" << (i*4+3) << "] = ";
+			for (int j = 0; j < 4; j++) {
+				std::cout << "0x" << std::hex << std::setw(2) << std::setfill('0')
+						  << static_cast<int>(bytes[i*4 + j]);
+				if (j < 3) std::cout << " ";
+			}
+		} else {
+			std::cout << "  bytes[12-13] = 0x" << std::hex << std::setw(2) 
+					  << std::setfill('0') << static_cast<int>(bytes[12])
+					  << " 0x" << std::setw(2) << static_cast<int>(bytes[13]);
+		}
+		std::cout << std::dec << std::endl;
+	}
+}
+
+void InOutData112::print_detailed(const char* name) const {
+	std::cout << "\n=== " << name << " ===" << std::endl;
+	
+	std::cout << "Memory layout (little-endian):" << std::endl;
+	std::cout << "  Bytes: ";
+	for (int i = 0; i < NUM_BYTES; i++) {
+		std::cout << "[" << std::setw(2) << i << "]=0x" 
+				  << std::hex << std::setw(2) << std::setfill('0')
+				  << static_cast<int>(bytes[i]) << std::dec;
+		if (i < NUM_BYTES - 1) std::cout << " ";
+		if ((i + 1) % 8 == 0 && i < NUM_BYTES - 1) std::cout << std::endl << "         ";
+	}
+	std::cout << std::endl;
+	
+	std::cout << "\n32-bit words in memory:" << std::endl;
+	for (int i = 0; i < NUM_WORDS; i++) {
+		std::cout << "  word[" << i << "] = 0x" << std::hex << std::setw(8) 
+				  << std::setfill('0') << get_word_little_endian(i) << std::dec
+				  << "  (BE: 0x" << std::hex << std::setw(8) 
+				  << get_word_big_endian(i) << ")" << std::dec << std::endl;
+	}
+	
+	std::cout << "\nString representations:" << std::endl;
+	std::cout << "  Hex BE:      " << to_hex_string(OutputFormat::HEX_BIG_ENDIAN) << std::endl;
+	std::cout << "  Hex LE:      " << to_hex_string(OutputFormat::HEX_LITTLE_ENDIAN) << std::endl;
+}
+
+void InOutData112::print_raw_memory(const char* name) const {
+	std::cout << name;
+	if (strlen(name) > 0) std::cout << ": ";
+	
+	std::cout << "Raw bytes in memory: ";
+	for (int i = 0; i < NUM_BYTES; i++) {
+		std::cout << "0x" << std::hex << std::setw(2) << std::setfill('0')
+				  << static_cast<int>(bytes[i]);
+		if (i < NUM_BYTES - 1) std::cout << " ";
+		if ((i + 1) % 8 == 0 && i < NUM_BYTES - 1) std::cout << std::endl << "                     ";
+	}
+	std::cout << std::dec << std::endl;
+}
+
+std::string InOutData112::to_hex_string(OutputFormat format) const {
+	std::stringstream ss;
+	
+	switch (format) {
+		case OutputFormat::HEX_BIG_ENDIAN:
+			ss << "0x";
+			for (int i = NUM_BYTES - 1; i >= 0; i--) {
+				ss << std::hex << std::setw(2) << std::setfill('0') 
+				   << static_cast<int>(bytes[i]);
+			}
+			break;
+			
+		case OutputFormat::HEX_LITTLE_ENDIAN:
+			ss << "0x";
+			for (int i = 0; i < NUM_BYTES; i++) {
+				ss << std::hex << std::setw(2) << std::setfill('0') 
+				   << static_cast<int>(bytes[i]);
+			}
+			break;
+			
+		default:
+			ss << "0x";
+			for (int i = NUM_BYTES - 1; i >= 0; i--) {
+				ss << std::hex << std::setw(2) << std::setfill('0') 
+				   << static_cast<int>(bytes[i]);
+			}
+			break;
+	}
+	
+	return ss.str();
+}
