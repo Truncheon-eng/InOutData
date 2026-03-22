@@ -188,6 +188,16 @@ struct InOutData112 {
 	std::string to_binary_string() const;
 	std::string to_binary_string(OutputFormat format) const;
 	std::string to_raw_string(bool as_hex = true) const;
+
+	void print_hex(const char* name = "") const;
+	void print_hex(OutputFormat format, const char* name) const;
+	void print_binary(const char* name = "") const;
+	void print_binary(OutputFormat format, const char* name) const;
+	// -------------------------------------------------
+	// Конвертация в массивы
+	// -------------------------------------------------
+	std::array<uint32_t, 4> to_array() const;
+	void from_array(const std::array<uint32_t, 4>& arr);
 	// -------------------------------------------------
 	// Для совместимости с Verilator
 	// -------------------------------------------------

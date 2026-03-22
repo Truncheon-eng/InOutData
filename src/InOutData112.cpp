@@ -471,3 +471,111 @@ std::string InOutData112::to_hex_string(OutputFormat format) const {
 	
 	return ss.str();
 }
+
+
+std::string InOutData112::to_hex_string() const {
+	return to_hex_string(default_output_format);
+}
+
+std::string InOutData112::to_binary_string(OutputFormat format) const {
+	std::stringstream ss;
+	
+	switch (format) {
+		case OutputFormat::BINARY_BIG_ENDIAN:
+			for (int i = NUM_BYTES - 1; i >= 0; i--) {
+				ss << std::bitset<8>(bytes[i]);
+				if (i > 0) ss << " ";
+				if ((NUM_BYTES - i) % 4 == 0 && i > 0) ss << std::endl;
+			}
+			break;
+			
+		case OutputFormat::BINARY_LITTLE_ENDIAN:
+			for (int i = 0; i < NUM_BYTES; i++) {
+				ss << std::bitset<8>(bytes[i]);
+				if (i < NUM_BYTES - 1) ss << " ";
+				if ((i + 1) % 4 == 0 && i < NUM_BYTES - 1) ss << std::endl;
+			}
+			break;
+			
+		default:
+			for (int i = NUM_BYTES - 1; i >= 0; i--) {
+				ss << std::bitset<8>(bytes[i]);
+				if (i > 0) ss << " ";
+				if ((NUM_BYTES - i) % 4 == 0 && i > 0) ss << std::endl;
+			}
+			break;
+	}
+	
+	return ss.str();
+}
+
+std::string InOutData112::to_binary_string() const {
+	return to_binary_string(
+		(default_output_format == OutputFormat::HEX_BIG_ENDIAN || 
+		 default_output_format == OutputFormat::HEX_LITTLE_ENDIAN) ?
+		OutputFormat::BINARY_BIG_ENDIAN : default_output_format
+	);
+}
+
+std::string InOutData112::to_raw_string(bool as_hex) const {
+	std::stringstream ss;
+	if (as_hex) {
+		ss << std::hex << std::setfill('0');
+		for (int i = 0; i < NUM_BYTES; i++) {
+			ss << std::setw(2) << static_cast<int>(bytes[i]);
+			if (i < NUM_BYTES - 1) ss << " ";
+			if ((i + 1) % 8 == 0 && i < NUM_BYTES - 1) ss << std::endl;
+		}
+	} else {
+		for (int i = 0; i < NUM_BYTES; i++) {
+			ss << std::bitset<8>(bytes[i]);
+			if (i < NUM_BYTES - 1) ss << " ";
+			if ((i + 1) % 4 == 0 && i < NUM_BYTES - 1) ss << std::endl;
+		}
+	}
+	return ss.str();
+}
+
+void InOutData112::print_hex(OutputFormat format, const char* name) const {
+	std::cout << name;
+	if (strlen(name) > 0) std::cout << ": ";
+	std::cout << to_hex_string(format) << std::endl;
+}
+
+void InOutData112::print_hex(const char* name) const {
+	print_hex(default_output_format, name);
+}
+
+void InOutData112::print_binary(OutputFormat format, const char* name) const {
+	std::cout << name;
+	if (strlen(name) > 0) std::cout << ": ";
+	std::cout << to_binary_string(format) << std::endl;
+}
+
+void InOutData112::print_binary(const char* name) const {
+	print_binary(
+		(default_output_format == OutputFormat::HEX_BIG_ENDIAN || 
+		 default_output_format == OutputFormat::HEX_LITTLE_ENDIAN) ?
+		OutputFormat::BINARY_BIG_ENDIAN : default_output_format,
+		name
+	);
+}
+
+// -------------------------------------------------
+// Конвертация в массивы
+// -------------------------------------------------
+std::array<uint32_t, 4> InOutData112::to_array() const {
+	std::array<uint32_t, 4> arr;
+	arr[0] = w0;
+	arr[1] = w1;
+	arr[2] = w2;
+	arr[3] = w3 & MASK_LAST_WORD;
+	return arr;
+}
+
+void InOutData112::from_array(const std::array<uint32_t, 4>& arr) {
+	w0 = arr[0];
+	w1 = arr[1];
+	w2 = arr[2];
+	w3 = arr[3] & MASK_LAST_WORD;
+}
