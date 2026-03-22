@@ -198,6 +198,30 @@ struct InOutData112 {
 	// -------------------------------------------------
 	std::array<uint32_t, 4> to_array() const;
 	void from_array(const std::array<uint32_t, 4>& arr);
+
+	// -------------------------------------------------
+	// Операторы
+	// -------------------------------------------------
+	uint32_t operator[](int index) const;
+	uint32_t& operator[](int index);
+	
+	InOutData112 operator&(const InOutData112& other) const;
+	InOutData112 operator|(const InOutData112& other) const;
+	InOutData112 operator^(const InOutData112& other) const;
+	InOutData112 operator~() const;
+	
+	InOutData112& operator&=(const InOutData112& other);
+	InOutData112& operator|=(const InOutData112& other);
+	InOutData112& operator^=(const InOutData112& other);
+	
+	bool operator==(const InOutData112& other) const;
+	bool operator!=(const InOutData112& other) const;
+
+	// Сортировочные операторы
+	bool operator<(const InOutData112& other) const;
+	bool operator>(const InOutData112& other) const;
+	bool operator<=(const InOutData112& other) const;
+	bool operator>=(const InOutData112& other) const;
 	// -------------------------------------------------
 	// Для совместимости с Verilator
 	// -------------------------------------------------

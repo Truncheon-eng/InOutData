@@ -579,3 +579,124 @@ void InOutData112::from_array(const std::array<uint32_t, 4>& arr) {
 	w2 = arr[2];
 	w3 = arr[3] & MASK_LAST_WORD;
 }
+
+// -------------------------------------------------
+// Операторы доступа
+// -------------------------------------------------
+uint32_t InOutData112::operator[](int index) const { 
+	if (index >= 0 && index < NUM_WORDS) return get_word(index);
+	cerr << RED << CROSS_MARK << __FUNCTION__ 
+		 << " index error !\t" << NORMAL << endl;
+	return 0;
+}
+
+uint32_t& InOutData112::operator[](int index) { 
+	static uint32_t dummy = 0;
+	if (index >= 0 && index < NUM_WORDS) {
+		if (index == 3) {
+			// Для w3 возвращаем ссылку на временную переменную с маской
+			static uint32_t masked_value;
+			masked_value = w3 & MASK_LAST_WORD;
+			return masked_value;
+		}
+		return words[index];
+	}
+	cerr << RED << CROSS_MARK << __FUNCTION__ 
+		 << " index error !\t" << NORMAL << endl;
+	return dummy;
+}
+
+// -------------------------------------------------
+// Бинарные операторы
+// -------------------------------------------------
+InOutData112 InOutData112::operator&(const InOutData112& other) const {
+	InOutData112 result;
+	for (int i = 0; i < 3; i++) {
+		result.words[i] = words[i] & other.words[i];
+	}
+	result.w3 = (w3 & other.w3) & MASK_LAST_WORD;
+	return result;
+}
+
+InOutData112 InOutData112::operator|(const InOutData112& other) const {
+	InOutData112 result;
+	for (int i = 0; i < 3; i++) {
+		result.words[i] = words[i] | other.words[i];
+	}
+	result.w3 = (w3 | other.w3) & MASK_LAST_WORD;
+	return result;
+}
+
+InOutData112 InOutData112::operator^(const InOutData112& other) const {
+	InOutData112 result;
+	for (int i = 0; i < 3; i++) {
+		result.words[i] = words[i] ^ other.words[i];
+	}
+	result.w3 = (w3 ^ other.w3) & MASK_LAST_WORD;
+	return result;
+}
+
+InOutData112 InOutData112::operator~() const {
+	InOutData112 result;
+	for (int i = 0; i < 3; i++) {
+		result.words[i] = ~words[i];
+	}
+	result.w3 = (~w3) & MASK_LAST_WORD;
+	return result;
+}
+
+InOutData112& InOutData112::operator&=(const InOutData112& other) {
+	for (int i = 0; i < 3; i++) {
+		words[i] &= other.words[i];
+	}
+	w3 &= other.w3;
+	apply_mask_internal();
+	return *this;
+}
+
+InOutData112& InOutData112::operator|=(const InOutData112& other) {
+	for (int i = 0; i < 3; i++) {
+		words[i] |= other.words[i];
+	}
+	w3 |= other.w3;
+	apply_mask_internal();
+	return *this;
+}
+
+InOutData112& InOutData112::operator^=(const InOutData112& other) {
+	for (int i = 0; i < 3; i++) {
+		words[i] ^= other.words[i];
+	}
+	w3 ^= other.w3;
+	apply_mask_internal();
+	return *this;
+}
+
+// -------------------------------------------------
+// Сравнение
+// -------------------------------------------------
+bool InOutData112::operator==(const InOutData112& other) const {
+	return std::memcmp(bytes, other.bytes, NUM_BYTES) == 0 &&
+		   (w3 & MASK_LAST_WORD) == (other.w3 & MASK_LAST_WORD);
+}
+
+bool InOutData112::operator!=(const InOutData112& other) const {
+	return !(*this == other);
+}
+
+// Сортировочные операторы
+bool InOutData112::operator<(const InOutData112& other) const {
+	return std::memcmp(bytes, other.bytes, NUM_BYTES) < 0;
+}
+
+bool InOutData112::operator>(const InOutData112& other) const {
+	return std::memcmp(bytes, other.bytes, NUM_BYTES) > 0;
+}
+
+bool InOutData112::operator<=(const InOutData112& other) const {
+	return std::memcmp(bytes, other.bytes, NUM_BYTES) <= 0;
+}
+
+bool InOutData112::operator>=(const InOutData112& other) const {
+	return std::memcmp(bytes, other.bytes, NUM_BYTES) >= 0;
+}
