@@ -98,7 +98,16 @@ struct InOutData112 {
 	uint32_t get_word(int index) const;
 	void set_word(int index, uint32_t value);
 
-    
+	// Доступ к словам с указанием порядка
+	uint32_t get_word_little_endian(int index) const;
+	uint32_t get_word_big_endian(int index) const;
+	void set_word_little_endian(int index, uint32_t value);
+	void set_word_big_endian(int index, uint32_t value);
+
+	// Установка всех слов
+	void set_all_words(uint32_t word0, uint32_t word1, 
+					   uint32_t word2, uint32_t word3);
+
 	// -------------------------------------------------
 	// Методы установки из байтовых массивов
 	// -------------------------------------------------
@@ -114,6 +123,13 @@ struct InOutData112 {
 	void set_from_bytes_big_endian(const uint8_t* data, 
 								   size_t len, 
 								   size_t offset = 0);
+
+    // -------------------------------------------------
+	// Утилиты для порядка байт
+	// -------------------------------------------------
+	static uint32_t swap_endian(uint32_t value);
+	static uint32_t bytes_to_word_big_endian(const uint8_t* bytes);
+	static uint32_t bytes_to_word_little_endian(const uint8_t* bytes);
 
 	// -------------------------------------------------
 	// Утилиты для усечения размерной сетки
