@@ -1,5 +1,5 @@
 // InOutData8.cpp
-#include "../include/InOutData8.hpp"
+#include "InOutData8.hpp"
 
 // Инициализация статической переменной
 InOutData8::OutputFormat InOutData8::default_output_format = 
@@ -58,7 +58,6 @@ InOutData8& InOutData8::operator=(InOutData8&& other) noexcept {
 	}
 	return *this;
 }
-
 
 // -------------------------------------------------
 // Базовые методы
@@ -251,7 +250,6 @@ void InOutData8::print_hex(const char* name) const {
 	cout << "Hex: " << to_hex_string() << endl;
 }
 
-
 void InOutData8::print_hex(OutputFormat format, 
 						   const char* name) 
 						   const {
@@ -359,4 +357,83 @@ InOutData8::operator uint8_t() const {
 InOutData8& InOutData8::operator=(uint8_t value) { 
 	packed = value; 
 	return *this; 
+}
+
+// -------------------------------------------------
+// Статические фабричные методы
+// -------------------------------------------------
+InOutData8 InOutData8::from_hex_string(const std::string& hex_str) {
+	InOutData8 result;
+	
+	if (hex_str.empty()) {
+		return result;
+	}
+	
+	std::string clean_str = hex_str;
+	
+	// Убираем префикс 0x или 0X
+	if (hex_str.size() >= 2 && hex_str.compare(0, 2, "0x") == 0) {
+		clean_str = hex_str.substr(2);
+	} else if (hex_str.size() >= 2 && hex_str.compare(0, 2, "0X") == 0) {
+		clean_str = hex_str.substr(2);
+	}
+	
+	// Берем последние 2 символа (младший байт)
+	if (clean_str.length() < 2) {
+		clean_str = std::string(2 - clean_str.length(), '0') + clean_str;
+	} else {
+		clean_str = clean_str.substr(clean_str.length() - 2);
+	}
+	
+	try {
+		result.packed = static_cast<uint8_t>(std::stoul(clean_str, nullptr, 16));
+	} catch (const std::exception& e) {
+		cerr << "InOutData8::from_hex_string: Error parsing hex string: " 
+			 << e.what() << endl;
+		result.packed = 0;
+	}
+	
+	return result;
+}
+
+InOutData8 InOutData8::from_byte(uint8_t value) {
+	return InOutData8(value);
+}
+
+InOutData8 InOutData8::from_bytes(const uint8_t* bytes, 
+								  size_t len) {
+	InOutData8 result;
+	if (bytes && len > 0) {
+		result.bytes[0] = bytes[0];
+	}
+	return result;
+}
+
+// Оставлены для совместимости интерфейса (хоть и не имеют смысла для 8 бит)
+InOutData8 InOutData8::from_bytes_little_endian(const uint8_t* bytes, 
+												size_t len) {
+	return from_bytes(bytes, len);
+}
+
+InOutData8 InOutData8::from_bytes_big_endian(const uint8_t* bytes, 
+											 size_t len) {
+	return from_bytes(bytes, len);
+}
+
+InOutData8 InOutData8::create_from_vector(const std::vector<uint8_t>& vec, 
+								   size_t start_idx) {
+	InOutData8 result;
+	result.from_vector(vec, start_idx);
+	return result;
+}
+
+// -------------------------------------------------
+// Методы для обратной совместимости
+// -------------------------------------------------
+void InOutData8::print_bin(const char* name) const {
+	print_binary(name);
+}
+
+void InOutData8::set_field(uint8_t byte0) {
+	b0 = byte0;
 }

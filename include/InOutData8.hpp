@@ -62,13 +62,13 @@ struct InOutData8 {
 	// -------------------------------------------------
 	InOutData8& operator=(const InOutData8& other);
 	InOutData8& operator=(InOutData8&& other) noexcept;
-
+	
 	// -------------------------------------------------
 	// Базовые методы
 	// -------------------------------------------------
 	void clear();
-
-
+	
+	// Доступ к данным
 	uint8_t get_byte() const;
 	void set_byte(uint8_t value);
 	
@@ -104,14 +104,16 @@ struct InOutData8 {
 	//							size_t start_idx = 0);
 	
 	std::vector<uint8_t> to_vector() const;
-
+	//std::vector<uint8_t> to_vector_little_endian() const;
+	//std::vector<uint8_t> to_vector_big_endian() const;
+	
 	// -------------------------------------------------
 	// Побитовые операции
 	// -------------------------------------------------
 	bool get_bit(int bit_index) const;
 	void set_bit(int bit_index, 
 				 bool value);
-
+	
 	// -------------------------------------------------
 	// Методы вывода
 	// -------------------------------------------------
@@ -124,19 +126,19 @@ struct InOutData8 {
 	
 	static OutputFormat default_output_format;
 	static void set_default_output_format(OutputFormat format);
-
+	
 	void print(const char* name = "") const;
 	void print_bytes(const char* name = "") const;
 	void print_detailed(const char* name = "") const;
 	void print_raw_memory(const char* name = "") const;
-
+	
 	std::string to_hex_string() const;
 	std::string to_hex_string(OutputFormat format) const;
 	std::string to_binary_string() const;
 	std::string to_binary_string(OutputFormat format) const;
 	std::string to_raw_string(bool as_hex = true) const;
-	std::string to_bin_string() const;
-
+	std::string to_bin_string() const;  // для обратной совместимости
+	
 	void print_hex(const char* name = "") const;
 	void print_hex(OutputFormat format, const char* name) const;
 	void print_binary(const char* name = "") const;
@@ -148,7 +150,7 @@ struct InOutData8 {
 	// -------------------------------------------------
 	std::array<uint8_t, 1> to_array() const;
 	void from_array(const std::array<uint8_t, 1>& arr);
-
+	
 	// -------------------------------------------------
 	// Операторы
 	// -------------------------------------------------
@@ -170,6 +172,28 @@ struct InOutData8 {
 	// Операторы приведения и присваивания
 	operator uint8_t() const;
 	InOutData8& operator=(uint8_t value);
+	
+	// -------------------------------------------------
+	// Статические фабричные методы
+	// -------------------------------------------------
+	static InOutData8 from_hex_string(const std::string& hex_str);
+	//static InOutData8 from_hex_string_le(const std::string& hex_str);
+	
+	static InOutData8 from_byte(uint8_t value);
+	static InOutData8 from_bytes(const uint8_t* bytes, 
+								 size_t len = 1);
+	static InOutData8 from_bytes_little_endian(const uint8_t* bytes, 
+											   size_t len = 1);
+	static InOutData8 from_bytes_big_endian(const uint8_t* bytes, 
+											size_t len = 1);
+	static InOutData8 create_from_vector(const std::vector<uint8_t>& vec,
+                                     size_t start_idx = 0);
+	//static InOutData8 from_vector(const std::vector<uint8_t>& vec, 
+	//							  size_t start_idx = 0);
+	//static InOutData8 from_vector_little_endian(const std::vector<uint8_t>& vec, 
+	//											size_t start_idx = 0);
+	//static InOutData8 from_vector_big_endian(const std::vector<uint8_t>& vec, 
+	//										 size_t start_idx = 0);
 };
 
 #endif // IN_OUT_DATA_8_HPP
