@@ -138,6 +138,16 @@ struct InOutData8 {
 	std::string to_bin_string() const;
 
 	void print_hex(const char* name = "") const;
+	void print_hex(OutputFormat format, const char* name) const;
+	void print_binary(const char* name = "") const;
+	void print_binary(OutputFormat format, const char* name) const;
+	void print_bin(const char* name = "") const;  // для обратной совместимости
+	
+	// -------------------------------------------------
+	// Конвертация в массивы
+	// -------------------------------------------------
+	std::array<uint8_t, 1> to_array() const;
+	void from_array(const std::array<uint8_t, 1>& arr);
 };
 
 #endif // IN_OUT_DATA_8_HPP

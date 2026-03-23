@@ -250,3 +250,40 @@ void InOutData8::print_hex(const char* name) const {
 	}
 	cout << "Hex: " << to_hex_string() << endl;
 }
+
+
+void InOutData8::print_hex(OutputFormat format, 
+						   const char* name) 
+						   const {
+	if (strlen(name) > 0) {
+		cout << name << " ";
+	}
+	cout << "Hex: " << to_hex_string(format) << endl;
+}
+
+void InOutData8::print_binary(const char* name) const {
+	if (strlen(name) > 0) {
+		cout << name << " ";
+	}
+	cout << "Binary: " << to_binary_string() << endl;
+}
+
+void InOutData8::print_binary(OutputFormat format, 
+							  const char* name) 
+							  const {
+	if (strlen(name) > 0) {
+		cout << name << " ";
+	}
+	cout << "Binary: " << to_binary_string(format) << endl;
+}
+
+// -------------------------------------------------
+// Конвертация в массивы
+// -------------------------------------------------
+std::array<uint8_t, 1> InOutData8::to_array() const {
+	return std::array<uint8_t, 1>{bytes[0]};
+}
+
+void InOutData8::from_array(const std::array<uint8_t, 1>& arr) {
+	bytes[0] = arr[0];
+}
