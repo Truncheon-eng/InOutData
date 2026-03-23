@@ -148,6 +148,28 @@ struct InOutData8 {
 	// -------------------------------------------------
 	std::array<uint8_t, 1> to_array() const;
 	void from_array(const std::array<uint8_t, 1>& arr);
+
+	// -------------------------------------------------
+	// Операторы
+	// -------------------------------------------------
+	uint8_t operator[](int index) const;
+	uint8_t& operator[](int index);
+	
+	InOutData8 operator&(const InOutData8& other) const;
+	InOutData8 operator|(const InOutData8& other) const;
+	InOutData8 operator^(const InOutData8& other) const;
+	InOutData8 operator~() const;
+	
+	InOutData8& operator&=(const InOutData8& other);
+	InOutData8& operator|=(const InOutData8& other);
+	InOutData8& operator^=(const InOutData8& other);
+	
+	bool operator==(const InOutData8& other) const;
+	bool operator!=(const InOutData8& other) const;
+	
+	// Операторы приведения и присваивания
+	operator uint8_t() const;
+	InOutData8& operator=(uint8_t value);
 };
 
 #endif // IN_OUT_DATA_8_HPP

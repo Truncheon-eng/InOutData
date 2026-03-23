@@ -287,3 +287,76 @@ std::array<uint8_t, 1> InOutData8::to_array() const {
 void InOutData8::from_array(const std::array<uint8_t, 1>& arr) {
 	bytes[0] = arr[0];
 }
+
+// -------------------------------------------------
+// Операторы
+// -------------------------------------------------
+uint8_t InOutData8::operator[](int index) const { 
+	if (index == 0) return bytes[0];
+	cerr << "InOutData8::operator[] const: Invalid index " << index << endl;
+	return 0;
+}
+
+uint8_t& InOutData8::operator[](int index) { 
+	static uint8_t dummy = 0;
+	if (index == 0) return bytes[0];
+	cerr << "InOutData8::operator[]: Invalid index " << index << endl;
+	return dummy;
+}
+
+InOutData8 InOutData8::operator&(const InOutData8& other) const {
+	InOutData8 result;
+	result.packed = packed & other.packed;
+	return result;
+}
+
+InOutData8 InOutData8::operator|(const InOutData8& other) const {
+	InOutData8 result;
+	result.packed = packed | other.packed;
+	return result;
+}
+
+InOutData8 InOutData8::operator^(const InOutData8& other) const {
+	InOutData8 result;
+	result.packed = packed ^ other.packed;
+	return result;
+}
+
+InOutData8 InOutData8::operator~() const {
+	InOutData8 result;
+	result.packed = ~packed;
+	return result;
+}
+
+InOutData8& InOutData8::operator&=(const InOutData8& other) {
+	packed &= other.packed;
+	return *this;
+}
+
+InOutData8& InOutData8::operator|=(const InOutData8& other) {
+	packed |= other.packed;
+	return *this;
+}
+
+InOutData8& InOutData8::operator^=(const InOutData8& other) {
+	packed ^= other.packed;
+	return *this;
+}
+
+bool InOutData8::operator==(const InOutData8& other) const {
+	return packed == other.packed;
+}
+
+bool InOutData8::operator!=(const InOutData8& other) const {
+	return !(*this == other);
+}
+
+// Операторы приведения и присваивания
+InOutData8::operator uint8_t() const { 
+	return packed; 
+}
+
+InOutData8& InOutData8::operator=(uint8_t value) { 
+	packed = value; 
+	return *this; 
+}
