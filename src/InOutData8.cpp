@@ -195,3 +195,58 @@ void InOutData8::print_raw_memory(const char* name) const {
 	cout << "Raw byte: 0x" << std::hex << std::setw(2) << std::setfill('0')
 		 << static_cast<int>(bytes[0]) << std::dec << endl;
 }
+
+// -------------------------------------------------
+// Строковые представления
+// -------------------------------------------------
+std::string InOutData8::to_hex_string(OutputFormat format) const {
+	std::stringstream ss;
+	ss << "0x" << std::hex << std::setw(2) << std::setfill('0')
+	   << static_cast<int>(packed);
+	return ss.str();
+}
+
+std::string InOutData8::to_hex_string() const {
+	return to_hex_string(default_output_format);
+}
+
+std::string InOutData8::to_binary_string(OutputFormat format) const {
+	std::stringstream ss;
+	switch (format) {
+		case OutputFormat::BINARY_BIG_ENDIAN:
+		case OutputFormat::BINARY_LITTLE_ENDIAN:
+			// Для 8 бит порядок не имеет значения
+			ss << std::bitset<8>(packed);
+			break;
+		default:
+			ss << std::bitset<8>(packed);
+			break;
+	}
+	return ss.str();
+}
+
+std::string InOutData8::to_binary_string() const {
+	return to_binary_string(default_output_format);
+}
+
+std::string InOutData8::to_raw_string(bool as_hex) const {
+	std::stringstream ss;
+	if (as_hex) {
+		ss << "0x" << std::hex << std::setw(2) << std::setfill('0')
+		   << static_cast<int>(bytes[0]);
+	} else {
+		ss << std::bitset<8>(bytes[0]);
+	}
+	return ss.str();
+}
+
+std::string InOutData8::to_bin_string() const {
+	return to_binary_string();
+}
+
+void InOutData8::print_hex(const char* name) const {
+	if (strlen(name) > 0) {
+		cout << name << " ";
+	}
+	cout << "Hex: " << to_hex_string() << endl;
+}

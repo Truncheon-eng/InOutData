@@ -130,8 +130,14 @@ struct InOutData8 {
 	void print_detailed(const char* name = "") const;
 	void print_raw_memory(const char* name = "") const;
 
+	std::string to_hex_string() const;
+	std::string to_hex_string(OutputFormat format) const;
 	std::string to_binary_string() const;
 	std::string to_binary_string(OutputFormat format) const;
+	std::string to_raw_string(bool as_hex = true) const;
+	std::string to_bin_string() const;
+
+	void print_hex(const char* name = "") const;
 };
 
 #endif // IN_OUT_DATA_8_HPP
