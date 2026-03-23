@@ -68,6 +68,50 @@ struct InOutData8 {
 	// -------------------------------------------------
 	void clear();
 
+
+	uint8_t get_byte() const;
+	void set_byte(uint8_t value);
+	
+	uint8_t get_packed() const;
+	void set_packed(uint8_t value);
+	
+	uint32_t get_word(int index = 0) const;
+	void set_word(int index, uint32_t value);
+	
+	void set_field(uint8_t byte0);
+
+	// -------------------------------------------------
+	// Методы установки из байтовых массивов
+	// -------------------------------------------------
+	void set_from_bytes(const uint8_t* data, 
+						size_t len, 
+						size_t offset = 0);
+	//void set_from_bytes_little_endian(const uint8_t* data, 
+	//								  size_t len, 
+	//								  size_t offset = 0);
+	//void set_from_bytes_big_endian(const uint8_t* data, 
+	//							   size_t len, 
+	//							   size_t offset = 0);
+	
+	// -------------------------------------------------
+	// Методы работы с векторами
+	// -------------------------------------------------
+	void from_vector(const std::vector<uint8_t>& vec, 
+	 						size_t start_idx = 0 );
+	//void from_vector_little_endian(const std::vector<uint8_t>& vec, 
+	//							   size_t start_idx = 0);
+	//void from_vector_big_endian(const std::vector<uint8_t>& vec, 
+	//							size_t start_idx = 0);
+	
+	std::vector<uint8_t> to_vector() const;
+
+	// -------------------------------------------------
+	// Побитовые операции
+	// -------------------------------------------------
+	bool get_bit(int bit_index) const;
+	void set_bit(int bit_index, 
+				 bool value);
+
 	// -------------------------------------------------
 	// Методы вывода
 	// -------------------------------------------------
