@@ -123,6 +123,15 @@ struct InOutData8 {
 	};
 	
 	static OutputFormat default_output_format;
+	static void set_default_output_format(OutputFormat format);
+
+	void print(const char* name = "") const;
+	void print_bytes(const char* name = "") const;
+	void print_detailed(const char* name = "") const;
+	void print_raw_memory(const char* name = "") const;
+
+	std::string to_binary_string() const;
+	std::string to_binary_string(OutputFormat format) const;
 };
 
 #endif // IN_OUT_DATA_8_HPP

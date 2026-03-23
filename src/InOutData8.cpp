@@ -151,3 +151,47 @@ void InOutData8::set_bit(int bit_index, bool value) {
 		packed &= ~(1u << bit_index);
 	}
 }
+
+// -------------------------------------------------
+// Методы вывода
+// -------------------------------------------------
+void InOutData8::set_default_output_format(OutputFormat format) {
+	default_output_format = format;
+}
+
+void InOutData8::print(const char* name) const {
+	cout << name << " InOutData8 (8 bits):" << endl;
+	cout << "  Value: 0x" << std::hex << std::setw(2) << std::setfill('0') 
+		 << static_cast<int>(packed) << std::dec << endl;
+	cout << "  Binary: " << to_binary_string() << endl;
+}
+
+void InOutData8::print_bytes(const char* name) const {
+	cout << name << " Bytes:" << endl;
+	cout << "  [0] = 0x" << std::hex << std::setw(2) << std::setfill('0')
+		 << static_cast<int>(bytes[0]) << std::dec << endl;
+}
+
+void InOutData8::print_detailed(const char* name) const {
+	cout << "\n=== " << name << " ===" << endl;
+	
+	cout << "Value: 0x" << std::hex << std::setw(2) << std::setfill('0')
+		 << static_cast<int>(packed) << std::dec << endl;
+	
+	cout << "Binary: " << to_binary_string() << endl;
+	
+	cout << "Bit breakdown:" << endl;
+	for (int i = 7; i >= 0; i--) {
+		cout << "  bit[" << i << "] = " << get_bit(i);
+		if (i == 4) cout << "  (nibble boundary)";
+		cout << endl;
+	}
+}
+
+void InOutData8::print_raw_memory(const char* name) const {
+	if (strlen(name) > 0) {
+		cout << name << ": ";
+	}
+	cout << "Raw byte: 0x" << std::hex << std::setw(2) << std::setfill('0')
+		 << static_cast<int>(bytes[0]) << std::dec << endl;
+}
