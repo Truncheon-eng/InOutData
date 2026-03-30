@@ -10,7 +10,7 @@
 #include <stdexcept>
 #include <algorithm>
 
-#include "Definitions.hpp"
+#include "Theme.hpp"
 #include "InOutFramerTXDataStrucHeader.hpp"
 
 // ------------------------------------------------------------------
@@ -78,8 +78,71 @@ struct InSignalOtu4Converter {
 					  << NORMAL << std::endl;
 		}
 	}
+	
+	// -------------------------------------------------
+	// Экспорт в std::vector<uint8_t>
+	// -------------------------------------------------
+	
+	// Преобразование в вектор байт
+	std::vector<uint8_t> to_bytes() const {
+		return {packed};
+	}
+	
+	// Добавление байта в существующий вектор
+	void append_to_bytes(std::vector<uint8_t>& byte_vector) const {
+		byte_vector.push_back(packed);
+	}
+	
+	// Запись в существующий вектор по индексу
+	void write_to_bytes(std::vector<uint8_t>& byte_vector, 
+						size_t index) const {
+		if (index < byte_vector.size()) {
+			byte_vector[index] = packed;
+		} else {
+			std::cerr << RED << CROSS_MARK << " " << __FUNCTION__ 
+					  << ": index " << index 
+					  << " out of range (vector size: " << byte_vector.size() << ")"
+					  << NORMAL << std::endl;
+		}
+	}
+	
+	// -------------------------------------------------
+	// Батч-обработка нескольких структур
+	// -------------------------------------------------
+	
+	// Создание вектора структур из вектора байт
+	static std::vector<InSignalOtu4Converter> batch_from_bytes(
+		const std::vector<uint8_t>& byte_vector) {
+		
+		std::vector<InSignalOtu4Converter> result;
+		result.reserve(byte_vector.size());
+		
+		for (uint8_t byte : byte_vector) {
+			result.emplace_back(static_cast<uint32_t>(byte & BIT_MASK));
+		}
+		
+		return result;
+	}
+	
+	// Создание вектора структур из вектора байт с шагом
+	static std::vector<InSignalOtu4Converter> batch_from_bytes_stride(
+		const std::vector<uint8_t>& byte_vector,
+		size_t stride = 1) {
+		
+		if (stride == 0) {
+			std::cerr << YELLOW << WARNING_MARK << " " << __FUNCTION__ 
+					  << ": stride cannot be 0, using 1"
+					  << NORMAL << std::endl;
+			stride = 1;
+		}
+		
+		std::vector<InSignalOtu4Converter> result;
+		result.reserve(byte_vector.size() / stride);
+		
+		for (size_t i = 0; i < byte_vector.size(); i += stride) {
+			result.emplace_back(static_cast<uint32_t>(byte_vector[i] & BIT_MASK));
+		}
+		
+		return result;
+	}
 };
-
-// ------------------------------------------------------------------
-//  Составные ВЫХОДНЫЕ данные модуля OTU4_CONVERTER подсистемы FRAMER_PCS_TX
-// ------------------------------------------------------------------
