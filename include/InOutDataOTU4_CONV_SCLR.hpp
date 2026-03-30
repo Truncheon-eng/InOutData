@@ -145,4 +145,59 @@ struct InSignalOtu4Converter {
 		
 		return result;
 	}
+	
+	// Преобразование вектора структур в вектор байт
+	static std::vector<uint8_t> batch_to_bytes(
+		const std::vector<InSignalOtu4Converter>& signals) {
+		
+		std::vector<uint8_t> result;
+		result.reserve(signals.size());
+		
+		for (const auto& signal : signals) {
+			result.push_back(signal.packed);
+		}
+		
+		return result;
+	}
+	
+	// -------------------------------------------------
+	// Геттеры
+	// -------------------------------------------------
+	bool get_DATA_VALID_IN() const { 
+		return static_cast<bool>(DATA_VALID_IN); 
+	}
+	
+	bool get_nHARD_RESET() const { 
+		return static_cast<bool>(nHARD_RESET); 
+	}
+	
+	constexpr uint8_t get_packed() const { 
+		return packed; 
+	}
+	
+	// Получение в виде байта с маской
+	constexpr uint8_t get_masked_byte() const {
+		return packed & BIT_MASK;
+	}
+	
+	// -------------------------------------------------
+	// Сеттеры
+	// -------------------------------------------------
+	void set_DATA_VALID_IN(bool v) { 
+		DATA_VALID_IN = v ? 1 : 0; 
+	}
+	
+	void set_nHARD_RESET(bool v) { 
+		nHARD_RESET = v ? 1 : 0; 
+	}
+	
+	void set_packed(uint8_t value) { 
+		packed = value & BIT_MASK;
+	}
+	
+	// Установка из байта с явной маской
+	void set_from_masked_byte(uint8_t masked_byte) {
+		packed = masked_byte & BIT_MASK;
+	}
+	
 };
