@@ -200,4 +200,59 @@ struct InSignalOtu4Converter {
 		packed = masked_byte & BIT_MASK;
 	}
 	
+	// -------------------------------------------------
+	// Установка сразу всех битов
+	// -------------------------------------------------
+	void set_all(bool data_valid_in, 
+                 bool n_hard_reset) {
+		DATA_VALID_IN = data_valid_in ? 1 : 0;
+		nHARD_RESET = n_hard_reset ? 1 : 0;
+	}
+	
+    void clear() {
+		packed = 0x00;
+	}
+
+	// -------------------------------------------------
+	// Операторы доступа (унификация с InOutData)
+	// -------------------------------------------------
+	// Константный оператор доступа к байту
+	constexpr uint8_t operator[](size_t index) const {
+		if (index < TOTAL_BYTES) {
+			return bytes[index] & BIT_MASK;  // Маска гарантирует корректность
+		}
+		throw std::out_of_range("Index out of range in InSignalOtu4Converter");
+	}
+	
+	// НЕконстантный оператор доступа
+	uint8_t& operator[](size_t index) {
+		if (index < TOTAL_BYTES) {
+			return bytes[index];  // Прямой доступ к байту в union
+		}
+		// Безопасная реализация без статической переменной
+		throw std::out_of_range("Index out of range in InSignalOtu4Converter");
+	}
+	
+	// -------------------------------------------------
+	// Операторы сравнения
+	// -------------------------------------------------
+	constexpr bool operator==(const InSignalOtu4Converter& other) const {
+		return packed == other.packed;
+	}
+	
+	constexpr bool operator!=(const InSignalOtu4Converter& other) const {
+		return packed != other.packed;
+	}
+	
+	// -------------------------------------------------
+	// Преобразование
+	// -------------------------------------------------
+	constexpr operator uint32_t() const { 
+		return static_cast<uint32_t>(packed); 
+	}
+	
+	// Явное преобразование в uint8_t
+	constexpr explicit operator uint8_t() const {
+		return packed;
+	}
 };
