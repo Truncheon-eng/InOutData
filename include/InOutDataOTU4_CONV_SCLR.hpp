@@ -484,5 +484,57 @@ struct OutSignalOtu4Converter {
 		
 		return result;
 	}
+	
+	// -------------------------------------------------
+	// Геттеры
+	// -------------------------------------------------
+	bool get_DATA_VALID_OUT() const { 
+		return static_cast<bool>(DATA_VALID_OUT); 
+	}
+	
+	bool get_FRAME_BEGIN() const { 
+		return static_cast<bool>(FRAME_BEGIN); 
+	}
+	
+	constexpr uint8_t get_packed() const { 
+		return packed; 
+	}
+	
+	// Получение в виде байта с маской
+	constexpr uint8_t get_masked_byte() const {
+		return packed & BIT_MASK;
+	}
+	
+	// -------------------------------------------------
+	// Сеттеры
+	// -------------------------------------------------
+	void set_DATA_VALID_OUT(bool v) { 
+		DATA_VALID_OUT = v ? 1 : 0; 
+	}
+	
+	void set_FRAME_BEGIN(bool v) { 
+		FRAME_BEGIN = v ? 1 : 0; 
+	}
+	
+	void set_packed(uint8_t value) { 
+		packed = value & BIT_MASK;
+	}
+	
+	// Установка из байта с явной маской
+	void set_from_masked_byte(uint8_t masked_byte) {
+		packed = masked_byte & BIT_MASK;
+	}
+	
+	// -------------------------------------------------
+	// Установка сразу всех битов
+	// -------------------------------------------------
+	void set_all(bool data_valid_out, bool frame_begin) {
+		DATA_VALID_OUT = data_valid_out ? 1 : 0;
+		FRAME_BEGIN = frame_begin ? 1 : 0;
+	}
+
+    void clear() {
+		packed = 0x00;
+	}
 };
 
