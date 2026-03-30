@@ -200,4 +200,105 @@ struct InOutSignals5 {
 	bool get_THOHEVALID()     const { 
 		return THOHEVALID; 
 	}
+
+	// -------------------------------------------------
+	// Сеттеры
+	// -------------------------------------------------
+	void set_DATA_VALID_OUT(bool v) { 
+		DATA_VALID_OUT = v ? 1 : 0; 
+	}
+	
+	void set_TXOHIFP_OUT(bool v)    { 
+		TXOHIFP_OUT    = v ? 1 : 0; 
+	}
+	
+	void set_TXOHIMFP_OUT(bool v)   { 
+		TXOHIMFP_OUT   = v ? 1 : 0; 
+	}
+	
+	void set_FEC_SOF_OUT(bool v)    { 
+		FEC_SOF_OUT    = v ? 1 : 0; 
+	}
+	
+	void set_THOHEVALID(bool v)     { 
+		THOHEVALID     = v ? 1 : 0; 
+	}
+
+	// -------------------------------------------------
+	// Установка сразу всех битов
+	// -------------------------------------------------
+	void set_all(bool data_valid_out,
+				 bool txohifp_out,
+				 bool txohimfp_out,
+				 bool fec_sof_out,
+				 bool thohevalid)
+	{
+		DATA_VALID_OUT = data_valid_out ? 1 : 0;
+		TXOHIFP_OUT    = txohifp_out    ? 1 : 0;
+		TXOHIMFP_OUT   = txohimfp_out   ? 1 : 0;
+		FEC_SOF_OUT    = fec_sof_out    ? 1 : 0;
+		THOHEVALID     = thohevalid     ? 1 : 0;
+	}
+
+	// -------------------------------------------------
+	// Оператор доступа
+	// -------------------------------------------------
+	uint32_t operator[](int index) const {
+		return (index == 0) ? static_cast<uint32_t>(packed) : 0u;
+	}
+
+	uint32_t& operator[](int index) {
+		static uint32_t dummy = 0;
+		if (index == 0) {
+			static uint32_t converted = 0;
+			converted = static_cast<uint32_t>(packed);
+			return converted;
+		}
+		return dummy;
+	}
+
+	// -------------------------------------------------
+	// Сервисный метод – текущий статус
+	// -------------------------------------------------
+	std::string get_status() const {
+		if (TXOHIFP_OUT)   return "TXOHIFP_OUT";
+		if (TXOHIMFP_OUT)  return "TXOHIMFP_OUT";
+		if (FEC_SOF_OUT)   return "FEC_SOF_OUT";
+		if (DATA_VALID_OUT) return "DATA_VALID_OUT";
+		if (THOHEVALID)    return "THOHEVALID";
+		return "UNKNOWN";
+	}
+
+	// -------------------------------------------------
+	// Вывод для отладки
+	// -------------------------------------------------
+	void print(const char* name = "") const {
+		std::cout << name << " Output Signals (5 bits):" << std::endl;
+		std::cout << "  DATA_VALID_OUT: " << static_cast<int>(DATA_VALID_OUT) << std::endl;
+		std::cout << "  TXOHIFP_OUT:    " << static_cast<int>(TXOHIFP_OUT)    << std::endl;
+		std::cout << "  TXOHIMFP_OUT:   " << static_cast<int>(TXOHIMFP_OUT)   << std::endl;
+		std::cout << "  FEC_SOF_OUT:    " << static_cast<int>(FEC_SOF_OUT)    << std::endl;
+		std::cout << "  THOHEVALID:     " << static_cast<int>(THOHEVALID)     << std::endl;
+		std::cout << "  packed: 0x" << std::hex << std::setw(2) << std::setfill('0')
+				  << static_cast<int>(packed) << std::dec << std::endl;
+		std::cout << "  binary: "
+				  << (THOHEVALID ? "1" : "0") << "_"
+				  << (FEC_SOF_OUT ? "1" : "0") << "_"
+				  << (TXOHIMFP_OUT ? "1" : "0") << "_"
+				  << (TXOHIFP_OUT ? "1" : "0") << "_"
+				  << (DATA_VALID_OUT ? "1" : "0") << std::endl;
+		std::cout << "  status: " << get_status() << std::endl;
+	}
+
+	// -------------------------------------------------
+	// Приведение к типу Verilator
+	// -------------------------------------------------
+#ifdef VERILATOR
+// Затюнить под WLVIDE_8
+	operator VlWide<1>() const {
+		VlWide<1> result;
+		result[0] = static_cast<uint32_t>(packed);
+		return result;
+	}
+#endif
 };
