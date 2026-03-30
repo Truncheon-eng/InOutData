@@ -255,4 +255,66 @@ struct InSignalOtu4Converter {
 	constexpr explicit operator uint8_t() const {
 		return packed;
 	}
+	
+	// -------------------------------------------------
+	// Получение битовой маски
+	// -------------------------------------------------
+	std::bitset<TOTAL_BITS> to_bitset() const {
+		return std::bitset<TOTAL_BITS>(packed);
+	}
+	
+	// -------------------------------------------------
+	// Строковое представление
+	// -------------------------------------------------
+	std::string to_string() const {
+		std::stringstream ss;
+		ss << "DV_IN=" << get_DATA_VALID_IN()
+		   << ", nRST=" << get_nHARD_RESET()
+		   << " [0x" << std::hex << std::setw(2) << std::setfill('0')
+		   << static_cast<int>(packed) << std::dec << "]";
+		return ss.str();
+	}
+	
+	std::string get_status() const {
+		std::stringstream ss;
+		ss << (get_DATA_VALID_IN() ? "DATA_VALID " : "NO_DATA ")
+		   << (get_nHARD_RESET() ? "| RESET_ACTIVE" : "| RESET_INACTIVE");
+		return ss.str();
+	}
+	
+	std::string to_binary_string() const {
+		return std::bitset<2>(packed).to_string();
+	}
+	
+	// Форматированное строковое представление с указанием битов
+	std::string to_detailed_string() const {
+		std::stringstream ss;
+		ss << "Bits: [DV_IN=" << (get_DATA_VALID_IN() ? "1" : "0")
+		   << ", nRST=" << (get_nHARD_RESET() ? "1" : "0") << "]"
+		   << " Hex: 0x" << std::hex << std::setw(2) << std::setfill('0')
+		   << static_cast<int>(packed) << std::dec
+		   << " Dec: " << static_cast<int>(packed);
+		return ss.str();
+	}
+	
+	// -------------------------------------------------
+	// Вывод для отладки (унифицированный формат)
+	// -------------------------------------------------
+	void print(const char* prefix = "") const {
+		std::ios_base::fmtflags old_flags = std::cout.flags();
+		
+		std::cout << prefix << "InSignalOtu4Converter [" << to_binary_string() << "]:\n";
+		std::cout << "  DATA_VALID_IN: " << (get_DATA_VALID_IN() ? "1 (true)" : "0 (false)") << "\n";
+		std::cout << "  nHARD_RESET:   " << (get_nHARD_RESET() ? "1 (active low)" : "0 (inactive)") << "\n";
+		std::cout << "  Packed: 0x" << std::hex << std::setw(2) << std::setfill('0')
+				  << static_cast<int>(packed) << std::dec << "\n";
+		std::cout << "  Status: " << get_status() << std::endl;
+		
+		std::cout.flags(old_flags);
+	}
+	
+	// Краткий вывод
+	void print_short(const char* prefix = "") const {
+		std::cout << prefix << to_string() << std::endl;
+	}
 };
