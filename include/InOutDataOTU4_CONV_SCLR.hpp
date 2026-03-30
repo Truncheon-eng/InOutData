@@ -536,5 +536,52 @@ struct OutSignalOtu4Converter {
     void clear() {
 		packed = 0x00;
 	}
+	
+	// -------------------------------------------------
+	// Операторы доступа (унификация с InOutData)
+	// -------------------------------------------------
+	constexpr uint8_t operator[](size_t index) const {
+		if (index < TOTAL_BYTES) {
+			return bytes[index] & BIT_MASK;
+		}
+		throw std::out_of_range("Index out of range in OutSignalOtu4Converter");
+	}
+	
+	uint8_t& operator[](size_t index) {
+		if (index < TOTAL_BYTES) {
+			return bytes[index];  // Прямой доступ к байту в union
+		}
+		throw std::out_of_range("Index out of range in InSignalOtu4Converter");
+	}
+	
+	// -------------------------------------------------
+	// Операторы сравнения
+	// -------------------------------------------------
+	constexpr bool operator==(const OutSignalOtu4Converter& other) const {
+		return packed == other.packed;
+	}
+	
+	constexpr bool operator!=(const OutSignalOtu4Converter& other) const {
+		return packed != other.packed;
+	}
+	
+	// -------------------------------------------------
+	// Преобразование
+	// -------------------------------------------------
+	constexpr operator uint32_t() const { 
+		return static_cast<uint32_t>(packed); 
+	}
+	
+	// Явное преобразование в uint8_t
+	constexpr explicit operator uint8_t() const {
+		return packed;
+	}
+	
+	// -------------------------------------------------
+	// Получение битовой маски
+	// -------------------------------------------------
+	std::bitset<TOTAL_BITS> to_bitset() const {
+		return std::bitset<TOTAL_BITS>(packed);
+	}
 };
 
