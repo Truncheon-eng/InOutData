@@ -139,3 +139,65 @@ struct InOutSignals4 {
 	}
 #endif
 };
+
+// -----------------------------------------------------------------------------
+// 5‑BIT data output structure
+// -----------------------------------------------------------------------------
+struct InOutSignals5 {
+	static constexpr int width      = 5;
+	static constexpr int num_words  = 1;
+	static_assert(width <= 8, "5‑bit structure must fit into a single byte");
+
+	union {
+		struct {
+			uint8_t DATA_VALID_OUT : 1;
+			uint8_t TXOHIFP_OUT    : 1;
+			uint8_t TXOHIMFP_OUT   : 1;
+			uint8_t FEC_SOF_OUT    : 1;
+			uint8_t THOHEVALID     : 1;
+			uint8_t RESERVED       : 3;   // Выравнивание
+		};
+		uint8_t packed;
+		uint8_t bytes[1];
+		uint32_t words[1];                // Унификация с существующим кодом
+	};
+
+	// -------------------------------------------------
+	// Конструкторы
+	// -------------------------------------------------
+	InOutSignals5() : packed(0) {}
+
+	InOutSignals5(bool data_valid_out,
+				  bool txohifp_out,
+				  bool txohimfp_out,
+				  bool fec_sof_out,
+				  bool thohevalid) : packed(0){
+		set_all(data_valid_out, 
+				txohifp_out, 
+				txohimfp_out, 
+				fec_sof_out, thohevalid);
+	}
+
+	// -------------------------------------------------
+	// Геттеры
+	// -------------------------------------------------
+	bool get_DATA_VALID_OUT() const { 
+		return DATA_VALID_OUT; 
+	}
+	
+	bool get_TXOHIFP_OUT()    const { 
+		return TXOHIFP_OUT; 
+	}
+	
+	bool get_TXOHIMFP_OUT()   const { 
+		return TXOHIMFP_OUT; 
+	}
+
+	bool get_FEC_SOF_OUT()    const { 
+		return FEC_SOF_OUT; 
+	}
+	
+	bool get_THOHEVALID()     const { 
+		return THOHEVALID; 
+	}
+};
