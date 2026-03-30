@@ -77,6 +77,7 @@ struct InSignalOtu4Converter {
 					  << NORMAL << std::endl;
 		}
 	}
+
 	
 	// -------------------------------------------------
 	// Экспорт в std::vector<uint8_t>
@@ -582,6 +583,61 @@ struct OutSignalOtu4Converter {
 	// -------------------------------------------------
 	std::bitset<TOTAL_BITS> to_bitset() const {
 		return std::bitset<TOTAL_BITS>(packed);
+	}
+	
+	// -------------------------------------------------
+	// Строковое представление
+	// -------------------------------------------------
+	std::string to_string() const {
+		std::stringstream ss;
+		ss << "DV_OUT=" << get_DATA_VALID_OUT()
+		   << ", FRM_BEG=" << get_FRAME_BEGIN()
+		   << " [0x" << std::hex << std::setw(2) << std::setfill('0')
+		   << static_cast<int>(packed) << std::dec << "]";
+		return ss.str();
+	}
+	
+	std::string get_status() const {
+		std::stringstream ss;
+		ss << (get_DATA_VALID_OUT() ? "DATA_VALID " : "NO_DATA ")
+		   << (get_FRAME_BEGIN() ? "| FRAME_START" : "| FRAME_CONT");
+		return ss.str();
+	}
+	
+	std::string to_binary_string() const {
+		return std::bitset<2>(packed).to_string();
+	}
+	
+	// Форматированное строковое представление с указанием битов
+	std::string to_detailed_string() const {
+		std::stringstream ss;
+		ss << "Bits: [DV_OUT=" << (get_DATA_VALID_OUT() ? "1" : "0")
+		   << ", FRM_BEG=" << (get_FRAME_BEGIN() ? "1" : "0") << "]"
+		   << " Hex: 0x" << std::hex << std::setw(2) << std::setfill('0')
+		   << static_cast<int>(packed) << std::dec
+		   << " Dec: " << static_cast<int>(packed);
+		return ss.str();
+	}
+	
+	// -------------------------------------------------
+	// Вывод для отладки (унифицированный формат)
+	// -------------------------------------------------
+	void print(const char* prefix = "") const {
+		std::ios_base::fmtflags old_flags = std::cout.flags();
+		
+		std::cout << prefix << "OutSignalOtu4Converter [" << to_binary_string() << "]:\n";
+		std::cout << "  DATA_VALID_OUT: " << (get_DATA_VALID_OUT() ? "1 (true)" : "0 (false)") << "\n";
+		std::cout << "  FRAME_BEGIN:    " << (get_FRAME_BEGIN() ? "1 (true)" : "0 (false)") << "\n";
+		std::cout << "  Packed: 0x" << std::hex << std::setw(2) << std::setfill('0')
+				  << static_cast<int>(packed) << std::dec << "\n";
+		std::cout << "  Status: " << get_status() << std::endl;
+		
+		std::cout.flags(old_flags);
+	}
+	
+	// Краткий вывод
+	void print_short(const char* prefix = "") const {
+		std::cout << prefix << to_string() << std::endl;
 	}
 };
 
