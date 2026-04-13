@@ -10,7 +10,8 @@
 #include <stdexcept>
 #include <algorithm>
 
-#include "Theme.hpp"
+#include "Definitions.hpp"
+#include "InOutFramerTXDataStrucHeader.hpp"
 
 // ------------------------------------------------------------------
 //  Составные ВХОДНЫЕ данные модуля OTU4_CONVERTER подсистемы FRAMER_PCS_TX
@@ -77,7 +78,34 @@ struct InSignalOtu4Converter {
 					  << NORMAL << std::endl;
 		}
 	}
-
+	
+	// Метод для загрузки из поддиапазона вектора
+	// void from_bytes_range(const std::vector<uint8_t>& byte_vector,
+	// 					  size_t start_index, 
+	// 					  size_t count) {
+	// 	if (start_index < byte_vector.size() && count > 0) {
+	// 		packed = byte_vector[start_index] & BIT_MASK;
+	// 	} else {
+	// 		packed = 0;
+	// 		std::cerr << RED << CROSS_MARK << " " << __FUNCTION__ 
+	// 				  << ": invalid range start_index=" << start_index 
+	// 				  << " count=" << count 
+	// 				  << " (vector size: " << byte_vector.size() << ")"
+	// 				  << NORMAL << std::endl;
+	// 	}
+	// }
+	
+	// Метод для загрузки из первого байта вектора (удобный shortcut)
+	// void from_first_byte(const std::vector<uint8_t>& byte_vector) {
+	// 	if (!byte_vector.empty()) {
+	// 		packed = byte_vector[0] & BIT_MASK;
+	// 	} else {
+	// 		packed = 0;
+	// 		std::cerr << RED << CROSS_MARK << " " << __FUNCTION__ 
+	// 				  << ": empty vector provided"
+	// 				  << NORMAL << std::endl;
+	// 	}
+	// }
 	
 	// -------------------------------------------------
 	// Экспорт в std::vector<uint8_t>
@@ -640,4 +668,5 @@ struct OutSignalOtu4Converter {
 		std::cout << prefix << to_string() << std::endl;
 	}
 };
+
 

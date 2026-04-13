@@ -12,7 +12,7 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "Theme.hpp"
+#include "Definitions.hpp"
 
 using std::cout;
 using std::endl;

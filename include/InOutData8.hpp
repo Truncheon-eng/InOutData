@@ -16,7 +16,7 @@
 #include "verilated.h"
 #endif
 
-#include "Theme.hpp"
+#include "Definitions.hpp"
 
 using std::cerr;
 using std::cout;
