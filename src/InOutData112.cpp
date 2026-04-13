@@ -1,4 +1,4 @@
-#include "../include/InOutData112.hpp"
+#include "InOutData112.hpp"
 
 // Инициализация статической переменной
 InOutData112::OutputFormat InOutData112::default_output_format = 
