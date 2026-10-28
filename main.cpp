@@ -959,28 +959,14 @@ void test_inoutdata8() {
 }
 
 int main(int argc, char** argv) {
-
-    // Парсинг аргументов командной строки
-	// ProgramOptions options = parse_arguments(argc, argv);
-
-    // Транзация верхнего уровня
-    // FramerTXTransaction Transaction;
-    
-    // Входной и выходной вектор в сборе
-    // FramerTXInputData InpitData;
-    // FramerTXOutputData OutputData;
-
-    // Составные типы данные
-
-    //InOutData320 Data320;
-    // InOutData128 Data128;
-    // InOutData112 Data112;
-    // InOutData8   Data8;
-    // InOutSignals4 InputScalarSignal;
-    // InOutSignals5 OutputScalarSignal;
-
-	test_inoutdata8();
+	test_hex_conversion();
+	test_correct_hex_conversion();
+	test_endian_methods();
+	test_set_endian_methods();
+	test_vector_methods();
+	demonstrate_practical_use();
+	test_hex_output();
 	test_inoutdata320();
-
+	test_inoutdata8();
 	return EXIT_SUCCESS;
 }
