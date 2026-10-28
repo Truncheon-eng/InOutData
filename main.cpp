@@ -21,19 +21,17 @@ int main() {
     srand(SEED);
     InOutData128 dut{gen_test_vector()};
 
-    std::cout << "dut[0] == 0x" << std::hex << std::setw(2) << std::setfill('0')
-        << static_cast<uint32_t>(dut.bytes[0])
-        << std::setfill('0')
-        << std::dec
-        << ";" << std::endl;
-
-    std::cout << "...." << std::endl;
-
-    std::cout << "dut[15] == 0x" << std::hex << std::setw(2) << std::setfill('0')
-        << static_cast<uint32_t>(dut.bytes[InOutData128::NUM_BYTES - 1])
-        << std::setfill('0')
-        << std::dec
-        << ";" << std::endl;
+    std::cout << "Test \"init InOutData128 with random value\"" << std::endl;
     
+    for (size_t i = 0; i < InOutData128::NUM_BYTES; i++) {
+	    std::cout << "\tdut[" << i << "] == 0x" << std::hex << std::setw(2) << std::setfill('0')
+		<< static_cast<uint32_t>(dut.bytes[i])
+		<< std::setfill('0')
+		<< std::dec
+		<< ";" << std::endl;
+    }
+
+    std::cout << "END TEST" << std::endl;
+
     return 0;
 }
