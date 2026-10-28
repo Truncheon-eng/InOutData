@@ -19,16 +19,20 @@ int main(int argc, char * argv[]) {
 
     obj_1.set_default_output_format(InOutData320::OutputFormat::HEX_LITTLE_ENDIAN);
 
+    std::cout << "HEX VIEW: ";
     obj_1.print_hex();
 
+    obj_1.set_bit(10, true);
     std::cout << "Bit " << 10 << ": " << (obj_1.get_bit(10) ? "1" : "0" ) << std::endl;
     obj_1.set_bit(10, false);
     std::cout << "Bit " << 10 << ": " << (obj_1.get_bit(10) ? "1" : "0" ) << std::endl;
 
+    std::cout << "HEX VIEW: ";
     obj_1.print_hex();
 
     std::array<uint32_t, InOutData320::NUM_WORDS> arr {obj_1.to_array()};
     
+    std::cout << "DEC VIEW: ";
     for(size_t i = 0; i != arr.size(); i++) {
         std::cout << arr[i];
         if (i == arr.size() - 1)
